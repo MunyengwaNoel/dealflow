@@ -53,8 +53,8 @@
                             {{ $slot }}
                         </div>
 
-                        <p class="mt-4 text-center text-sm text-slate-500">
-                            <a href="/" class="font-medium text-slate-400 transition-colors hover:text-white">{{ __('← Back to homepage') }}</a>
+                        <p class="mt-5 text-center text-sm text-slate-300">
+                            <a href="/" class="font-medium text-slate-300 underline decoration-slate-500/60 underline-offset-2 transition-colors hover:text-white">{{ __('← Back to homepage') }}</a>
                         </p>
                     </div>
                 @endif

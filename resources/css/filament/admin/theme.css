@@ -44,15 +44,32 @@
 }
 
 .fi-simple-header-subheading {
-    color: #94a3b8 !important;
+    color: #cbd5e1 !important;
 }
 
-/* Field labels */
+/* More breathing room between stacked fields on auth forms */
+.fi-simple-main .fi-simple-page > section.grid {
+    row-gap: 2rem !important;
+}
+
+/* Field labels — auth card is always dark; Filament uses text-gray-950 until `dark` is on <html> */
 .fi-simple-main label,
 .fi-simple-main .fi-fo-field-wrp-label {
-    color: #94a3b8 !important;
+    color: #e2e8f0 !important;
     font-size: 0.8125rem !important;
     font-weight: 600 !important;
+}
+.fi-simple-main .fi-fo-field-wrp-label span.text-sm {
+    color: #f1f5f9 !important;
+}
+.fi-simple-main .fi-fo-field-wrp-label sup {
+    color: #fca5a5 !important;
+}
+
+/* Muted copy inside auth fields */
+.fi-simple-main .fi-fo-field-wrp-description,
+.fi-simple-main .fi-fo-field-wrp-hint {
+    color: #cbd5e1 !important;
 }
 
 /* Input wrapper (Filament wraps fields) — match dark inputs */
@@ -127,7 +144,7 @@
 }
 
 .fi-simple-main .fi-checkbox-label {
-    color: #94a3b8 !important;
+    color: #e2e8f0 !important;
     font-size: 0.8125rem !important;
 }
 
@@ -148,9 +165,10 @@
     box-shadow: none !important;
 }
 
-/* Field hints (e.g. forgot password) */
-.fi-simple-main .fi-fo-field-wrp-hint {
-    color: #94a3b8 !important;
+/* Field hints — readable; links stay visibly “link” coloured */
+.fi-simple-main .fi-fo-field-wrp-hint a,
+.fi-simple-main .fi-fo-field-wrp-hint a.fi-link {
+    color: #93c5fd !important;
 }
 
 /* ── Topbar ───────────────────────────────────────────────── */
