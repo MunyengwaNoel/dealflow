@@ -504,10 +504,10 @@
                 <div class="relative">
                     <div class="text-sm font-semibold text-blue-400 uppercase tracking-wider">Pro Plan</div>
                     <div class="mt-4 flex items-baseline gap-1">
-                        <span class="text-5xl font-black text-white">$29</span>
+                        <span class="text-5xl font-black text-white">$2</span>
                         <span class="text-slate-400">/month</span>
                     </div>
-                    <p class="mt-1 text-xs text-slate-500">Billed annually ($348/yr)</p>
+                    <p class="mt-1 text-xs text-slate-500">Billed annually ($24/yr)</p>
                     <p class="mt-2 text-sm text-slate-400">Everything in Free, plus unlimited growth.</p>
 
                     <a href="/register"
