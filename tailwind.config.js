@@ -14,6 +14,7 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 nunito: ['Nunito', ...defaultTheme.fontFamily.sans],
+                landing: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 brand: {

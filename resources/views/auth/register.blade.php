@@ -39,7 +39,7 @@
                 <p class="font-semibold text-amber-900">Prefer a professional .co.zw address?</p>
                 <p class="mt-1 text-amber-900/90">
                     Contact <a href="mailto:info@softurf.co.zw" class="font-semibold text-amber-950 underline decoration-amber-600 underline-offset-2 hover:text-amber-800">info@softurf.co.zw</a>
-                    or message <a href="https://wa.me/263718617039" class="font-semibold text-amber-950 underline decoration-amber-600 underline-offset-2 hover:text-amber-800" target="_blank" rel="noopener noreferrer">071 861 7039</a> to get a .co.zw email for your business.
+                    or message <a href="https://wa.me/263718617039" class="font-semibold text-amber-950 underline decoration-amber-600 underline-offset-2 hover:text-amber-800" target="_blank" rel="noopener noreferrer">071 861 7038</a> to get a .co.zw email for your business.
                 </p>
             </div>
         </div>
