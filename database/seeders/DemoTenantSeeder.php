@@ -17,9 +17,38 @@ use App\Services\TenantService;
 use App\Support\DemoUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DemoTenantSeeder extends Seeder
 {
+    /** @return array<int, string> */
+    protected function companyNames(): array
+    {
+        return [
+            'Nyasha Logistics (Pvt) Ltd',
+            'Chitungwiza Fresh Produce',
+            'Bulawayo Steel Traders',
+            'Mutare Timber & Hardware',
+            'Harare Cloud Solutions',
+            'Victoria Falls Tours Co.',
+            'Gweru Auto Parts',
+            'Masvingo Agritech',
+            'Kwekwe Mining Supplies',
+            'Bindura Citrus Exports',
+            'Marondera Estates',
+            'Rusape Retail Group',
+            'Kariba Fisheries',
+            'Chipinge Coffee Roasters',
+            'Beitbridge Border Services',
+        ];
+    }
+
+    /** @param  array<int, mixed>  $items */
+    protected function pick(array $items): mixed
+    {
+        return $items[array_rand($items)];
+    }
+
     public function run(): void
     {
         $slug = 'demo';
@@ -71,44 +100,48 @@ class DemoTenantSeeder extends Seeder
 
         app()->instance('tenant', $tenant);
 
-        $faker = fake();
         $templates = ServiceTemplate::query()->where('tenant_id', $tenant->id)->get();
+        $names = $this->companyNames();
 
         $clients = collect();
-        for ($i = 0; $i < 15; $i++) {
+        foreach (range(0, 14) as $i) {
+            $suffix = Str::lower(Str::random(6));
             $clients->push(Client::query()->create([
-                'name' => $faker->company(),
-                'trading_name' => $faker->optional()->company(),
-                'email' => $faker->companyEmail(),
-                'phone' => $faker->phoneNumber(),
-                'city' => $faker->city(),
-                'country' => $faker->countryCode(),
-                'client_type' => $faker->randomElement(['individual', 'company']),
-                'status' => $faker->randomElement(['active', 'active', 'inactive', 'prospect']),
+                'name' => $names[$i],
+                'trading_name' => random_int(0, 1) ? $names[$i].' Trading' : null,
+                'email' => 'client-'.$suffix.'@demo-mail.invalid',
+                'phone' => '+263 77 '.str_pad((string) random_int(100000, 999999), 6, '0', STR_PAD_LEFT),
+                'city' => $this->pick(['Harare', 'Bulawayo', 'Mutare', 'Gweru', 'Masvingo', 'Kwekwe']),
+                'country' => 'ZW',
+                'client_type' => $this->pick(['individual', 'company']),
+                'status' => $this->pick(['active', 'active', 'inactive', 'prospect']),
                 'assigned_to' => $owner->id,
             ]));
         }
 
+        $docTypes = [
+            'certificate_of_incorporation',
+            'tax_clearance',
+            'praz_certificate',
+            'company_profile',
+            'other',
+        ];
+
         foreach ($clients as $client) {
-            for ($d = 0; $d < $faker->numberBetween(1, 3); $d++) {
+            $docCount = random_int(1, 3);
+            for ($d = 0; $d < $docCount; $d++) {
                 $path = 'documents/'.$tenant->id.'/demo-'.$client->id.'-'.$d.'.txt';
                 Storage::disk('local')->put($path, "Demo document content for client {$client->id}");
                 Document::query()->create([
                     'client_id' => $client->id,
-                    'document_type' => $faker->randomElement([
-                        'certificate_of_incorporation',
-                        'tax_clearance',
-                        'praz_certificate',
-                        'company_profile',
-                        'other',
-                    ]),
-                    'title' => $faker->sentence(3),
+                    'document_type' => $this->pick($docTypes),
+                    'title' => 'Demo document '.($d + 1).' for '.$client->name,
                     'file_path' => $path,
                     'file_size' => 128,
                     'mime_type' => 'text/plain',
                     'issue_date' => now()->subMonths(3)->toDateString(),
-                    'expiry_date' => $faker->boolean(70)
-                        ? now()->addDays($faker->numberBetween(5, 120))->toDateString()
+                    'expiry_date' => random_int(1, 100) <= 70
+                        ? now()->addDays(random_int(5, 120))->toDateString()
                         : null,
                     'reminder_days_before' => 30,
                     'uploaded_by' => $owner->id,
@@ -118,19 +151,21 @@ class DemoTenantSeeder extends Seeder
 
         $quoteSvc = new QuoteService;
 
-        foreach ($clients->random(10) as $client) {
+        $quoteStatuses = ['draft', 'sent', 'viewed', 'accepted', 'accepted', 'accepted'];
+
+        foreach ($clients->random(min(10, $clients->count())) as $client) {
             $quote = Quote::query()->create([
                 'client_id' => $client->id,
                 'quote_number' => QuoteService::nextQuoteNumber($tenant->id),
-                'status' => $faker->randomElement(['draft', 'sent', 'viewed', 'accepted', 'accepted', 'accepted']),
+                'status' => $this->pick($quoteStatuses),
                 'discount_amount' => 0,
                 'discount_percent' => 0,
-                'notes' => $faker->optional()->sentence(),
+                'notes' => random_int(0, 1) ? 'Demo quote notes — follow up within 7 days.' : null,
                 'valid_until' => now()->addDays(30)->toDateString(),
                 'created_by' => $owner->id,
             ]);
 
-            $n = $faker->numberBetween(1, 4);
+            $n = random_int(1, 4);
             for ($j = 0; $j < $n; $j++) {
                 $tpl = $templates->random();
                 QuoteItem::query()->create([
@@ -140,7 +175,7 @@ class DemoTenantSeeder extends Seeder
                     'description' => $tpl->description,
                     'cost_price' => $tpl->cost_price,
                     'sell_price' => $tpl->sell_price,
-                    'quantity' => $faker->numberBetween(1, 5),
+                    'quantity' => random_int(1, 5),
                     'line_total' => 0,
                 ]);
             }
@@ -154,35 +189,45 @@ class DemoTenantSeeder extends Seeder
             $inv = $quoteSvc->convertToInvoice($quote, $owner->id);
             $inv->update(['status' => 'sent', 'due_date' => now()->addDays(7)->toDateString()]);
 
-            if ($faker->boolean(60)) {
+            if (random_int(1, 100) <= 60) {
                 (new InvoiceService)->recordPayment($inv, [
-                    'amount' => min((float) $inv->total, (float) $inv->total * $faker->randomElement([0.5, 1.0])),
-                    'payment_method' => $faker->randomElement(['cash', 'bank_transfer', 'ecocash']),
-                    'payment_date' => now()->subDays($faker->numberBetween(0, 5))->toDateString(),
+                    'amount' => min((float) $inv->total, (float) $inv->total * $this->pick([0.5, 1.0])),
+                    'payment_method' => $this->pick(['cash', 'bank_transfer', 'ecocash']),
+                    'payment_date' => now()->subDays(random_int(0, 5))->toDateString(),
                 ], $owner->id);
             }
         }
 
-        foreach ($clients->random(12) as $client) {
+        $stages = ['lead', 'potential', 'quoted', 'negotiation', 'won', 'lost'];
+        $priorities = ['hot', 'warm', 'cold'];
+        $phrases = [
+            'Website refresh and hosting bundle',
+            'Annual compliance package',
+            'Company registration + domain',
+            'Tax clearance renewal',
+            'Starter website + email hosting',
+        ];
+
+        foreach ($clients->random(min(12, $clients->count())) as $client) {
             Deal::query()->create([
                 'client_id' => $client->id,
-                'title' => $faker->catchPhrase(),
-                'description' => $faker->optional()->paragraph(),
-                'stage' => $faker->randomElement(['lead', 'potential', 'quoted', 'negotiation', 'won', 'lost']),
-                'priority' => $faker->randomElement(['hot', 'warm', 'cold']),
-                'value' => $faker->randomFloat(2, 200, 25000),
-                'expected_close_date' => now()->addDays($faker->numberBetween(-5, 45))->toDateString(),
+                'title' => $this->pick($phrases),
+                'description' => random_int(0, 1) ? 'Demo deal created by DemoTenantSeeder for dashboard previews.' : null,
+                'stage' => $this->pick($stages),
+                'priority' => $this->pick($priorities),
+                'value' => round(random_int(20000, 2500000) / 100, 2),
+                'expected_close_date' => now()->addDays(random_int(-5, 45))->toDateString(),
                 'assigned_to' => $owner->id,
             ]);
         }
 
         for ($c = 0; $c < 90; $c++) {
             CashflowEntry::query()->create([
-                'entry_type' => $faker->randomElement(['income', 'expense']),
-                'category' => $faker->randomElement(['sales', 'operations', 'marketing', 'other']),
-                'description' => $faker->sentence(4),
-                'amount' => $faker->randomFloat(2, 20, 5000),
-                'payment_method' => $faker->randomElement(['cash', 'bank_transfer', 'other']),
+                'entry_type' => $this->pick(['income', 'expense']),
+                'category' => $this->pick(['sales', 'operations', 'marketing', 'other']),
+                'description' => 'Demo cashflow entry #'.($c + 1).' — seeded for charts.',
+                'amount' => round(random_int(2000, 500000) / 100, 2),
+                'payment_method' => $this->pick(['cash', 'bank_transfer', 'other']),
                 'entry_date' => now()->subDays($c)->toDateString(),
                 'client_id' => $clients->random()->id,
                 'recorded_by' => $owner->id,
