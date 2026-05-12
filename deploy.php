@@ -44,7 +44,13 @@ task('npm:build', function () {
     run('cd {{release_path}} && npm run build');
 });
 
+desc('Publish Livewire JS/CSS to public/vendor/livewire (avoids /livewire/livewire.js 404 on hosts that do not route that path to Laravel)');
+task('livewire:assets', function () {
+    run('cd {{release_path}} && php artisan livewire:publish --assets --no-interaction');
+});
+
 after('deploy:vendors', 'npm:install');
+after('deploy:vendors', 'livewire:assets');
 after('npm:install', 'npm:build');
 
 after('npm:build', function () {
