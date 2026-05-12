@@ -3,37 +3,121 @@
 @config 'tailwind.config.js';
 
 /* ============================================================
-   BizTrack — Filament Admin Theme (light mode)
+   BizTrack — Filament Admin Theme
+   Light + dark mode
    ============================================================ */
 
-/* ── Page background ──────────────────────────────────────── */
+/* ── Body / page shell ────────────────────────────────────── */
 .fi-body {
-    background-color: #f1f5f9 !important;
+    background-color: #f1f5f9;
+}
+.dark .fi-body {
+    background-color: #080e1c !important;
+    background-image: none !important;
+}
+
+/* ── Login page: dark gradient background ─────────────────── */
+/* Covers the whole login screen behind the card */
+.fi-simple-layout {
+    background: linear-gradient(145deg, #080e1c 0%, #0f172a 55%, #1e1b4b 100%);
+    min-height: 100vh;
+}
+/* Needed when Filament's own body class fights the above */
+.fi-body:has(.fi-simple-layout),
+.dark .fi-body:has(.fi-simple-layout) {
+    background: linear-gradient(145deg, #080e1c 0%, #0f172a 55%, #1e1b4b 100%) !important;
+}
+
+/* Login card */
+.fi-simple-main {
+    background-color: #1e293b !important;
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.6) !important;
+    ring: none !important;
+}
+
+/* Login heading + labels */
+.fi-simple-header-heading {
+    color: #f1f5f9 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* Input fields inside login card */
+.fi-simple-main .fi-input,
+.fi-simple-main input[type="email"],
+.fi-simple-main input[type="password"],
+.fi-simple-main input[type="text"] {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+    border-radius: 0.625rem !important;
+}
+.fi-simple-main .fi-input:focus,
+.fi-simple-main input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    outline: none !important;
+}
+
+/* Labels inside login */
+.fi-simple-main label,
+.fi-simple-main .fi-fo-field-wrp-label {
+    color: #94a3b8 !important;
+    font-size: 0.8125rem !important;
+    font-weight: 600 !important;
+}
+
+/* Login button */
+.fi-simple-main .fi-btn-color-primary {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-radius: 0.625rem !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
+    transition: all 0.15s ease !important;
+}
+.fi-simple-main .fi-btn-color-primary:hover {
+    background-color: #1d4ed8 !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* "Remember me" checkbox label */
+.fi-simple-main .fi-checkbox-label {
+    color: #94a3b8 !important;
+    font-size: 0.8125rem !important;
 }
 
 /* ── Topbar ───────────────────────────────────────────────── */
 .fi-topbar {
-    background-color: #ffffff !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04) !important;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-
-.fi-topbar-item,
-.fi-topbar-open-sidebar-btn,
-.fi-global-search-field {
-    color: #64748b !important;
+.dark .fi-topbar {
+    background-color: #0f172a !important;
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: none !important;
 }
 
 /* ── Sidebar ──────────────────────────────────────────────── */
 .fi-sidebar {
-    background-color: #ffffff !important;
-    border-right: 1px solid #e2e8f0 !important;
-    box-shadow: none !important;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: none;
+}
+.dark .fi-sidebar {
+    background-color: #0f172a !important;
+    border-right-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 .fi-sidebar-header {
-    border-bottom: 1px solid #f1f5f9 !important;
-    padding: 0.875rem 1rem !important;
+    border-bottom: 1px solid #f1f5f9;
+}
+.dark .fi-sidebar-header {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Nav group labels */
@@ -42,10 +126,13 @@
     font-weight: 700 !important;
     letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
-    color: #94a3b8 !important;
+    color: #94a3b8;
     padding: 0 0.625rem !important;
     margin-top: 1rem !important;
     margin-bottom: 0.25rem !important;
+}
+.dark .fi-sidebar-group-label {
+    color: rgba(148, 163, 184, 0.6) !important;
 }
 
 /* Nav items */
@@ -53,80 +140,79 @@
     border-radius: 0.5rem !important;
     font-size: 0.8125rem !important;
     font-weight: 500 !important;
-    color: #475569 !important;
+    color: #475569;
     padding: 0.5rem 0.625rem !important;
     transition: background-color 0.12s ease, color 0.12s ease !important;
 }
-
-.fi-sidebar-item-button:hover {
-    background-color: #f8fafc !important;
-    color: #1e293b !important;
+.dark .fi-sidebar-item-button {
+    color: #94a3b8 !important;
 }
-
+.dark .fi-sidebar-item-button:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #e2e8f0 !important;
+}
 .fi-sidebar-item-button.fi-active {
     background-color: #eff6ff !important;
     color: #2563eb !important;
     font-weight: 600 !important;
 }
-
-.fi-sidebar-item-button.fi-active .fi-sidebar-item-icon {
-    color: #2563eb !important;
+.dark .fi-sidebar-item-button.fi-active {
+    background-color: rgba(37, 99, 235, 0.15) !important;
+    color: #60a5fa !important;
+}
+.dark .fi-sidebar-item-button.fi-active .fi-sidebar-item-icon {
+    color: #60a5fa !important;
 }
 
 /* Sidebar footer */
 .fi-sidebar-footer {
-    border-top: 1px solid #f1f5f9 !important;
-    background-color: #ffffff !important;
+    border-top: 1px solid #f1f5f9;
+}
+.dark .fi-sidebar-footer {
+    border-top-color: rgba(255, 255, 255, 0.05) !important;
+    background-color: #0f172a !important;
 }
 
 /* ── Main content area ────────────────────────────────────── */
 .fi-main {
-    padding: 1.25rem !important;
+    padding: 1.25rem;
 }
-
 @media (min-width: 1024px) {
     .fi-main {
-        padding: 1.75rem 2rem !important;
+        padding: 1.75rem 2rem;
     }
 }
 
 /* ── Page header ──────────────────────────────────────────── */
-.fi-page-header {
-    margin-bottom: 1.5rem !important;
-}
-
 .fi-page-header-heading {
     font-size: 1.5rem !important;
     font-weight: 800 !important;
     letter-spacing: -0.025em !important;
-    color: #0f172a !important;
+}
+.dark .fi-page-header-heading {
+    color: #f1f5f9 !important;
 }
 
-.fi-page-header-subheading {
-    font-size: 0.875rem !important;
-    color: #64748b !important;
-}
-
-/* ── Widgets (kill dark backgrounds) ─────────────────────── */
-.fi-wi-stats-overview-stat,
-.fi-wi-chart,
-.fi-wi-widget,
-.fi-widget {
+/* ── Stats overview cards ─────────────────────────────────── */
+.fi-wi-stats-overview-stat {
+    border-radius: 1rem !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 1.25rem 1.5rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
     background-color: #ffffff !important;
 }
-
-/* Stats overview cards */
-.fi-wi-stats-overview-stat {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 1rem !important;
-    padding: 1.25rem 1.5rem !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04) !important;
-    transition: box-shadow 0.2s ease, transform 0.2s ease !important;
+.dark .fi-wi-stats-overview-stat {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
-
 .fi-wi-stats-overview-stat:hover {
-    box-shadow: 0 6px 20px 0 rgb(0 0 0 / 0.08) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
     transform: translateY(-2px) !important;
+}
+.dark .fi-wi-stats-overview-stat:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 .fi-wi-stats-overview-stat-value {
@@ -134,101 +220,112 @@
     font-weight: 900 !important;
     letter-spacing: -0.04em !important;
     line-height: 1 !important;
-    color: #0f172a !important;
 }
-
+.dark .fi-wi-stats-overview-stat-value {
+    color: #f1f5f9 !important;
+}
 .fi-wi-stats-overview-stat-label {
     font-size: 0.8125rem !important;
     font-weight: 600 !important;
     color: #64748b !important;
     margin-bottom: 0.5rem !important;
 }
-
+.dark .fi-wi-stats-overview-stat-label {
+    color: #94a3b8 !important;
+}
 .fi-wi-stats-overview-stat-description {
     font-size: 0.75rem !important;
     font-weight: 500 !important;
     margin-top: 0.5rem !important;
 }
 
-/* Chart widget */
+/* ── Chart widget ─────────────────────────────────────────── */
 .fi-wi-chart {
-    border: 1px solid #e2e8f0 !important;
     border-radius: 1rem !important;
     overflow: hidden !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04) !important;
-}
-
-.fi-wi-chart-header {
-    padding: 1.25rem 1.5rem 0 !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
     background-color: #ffffff !important;
 }
-
+.dark .fi-wi-chart {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
 .fi-wi-chart-heading {
     font-size: 0.9375rem !important;
     font-weight: 700 !important;
-    color: #0f172a !important;
     letter-spacing: -0.01em !important;
 }
+.dark .fi-wi-chart-heading {
+    color: #f1f5f9 !important;
+}
+.dark .fi-wi-chart-description {
+    color: #94a3b8 !important;
+}
 
-/* Generic section/card widget */
-.fi-wi-widget .fi-section,
-.fi-widget .fi-section {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+/* ── Generic widgets / sections ───────────────────────────── */
+.fi-section {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
     border-radius: 1rem !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.dark .fi-section {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+.fi-section-header {
+    border-bottom-color: #f1f5f9;
+}
+.dark .fi-section-header {
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
+.fi-section-header-heading {
+    font-size: 0.9375rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+}
+.dark .fi-section-header-heading {
+    color: #f1f5f9 !important;
 }
 
 /* ── Tables ───────────────────────────────────────────────── */
 .fi-ta-ctn {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 1rem !important;
     overflow: hidden !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
-
+.dark .fi-ta-ctn {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
 .fi-ta-header {
-    background-color: #f8fafc !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
 }
-
+.dark .fi-ta-header {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.05) !important;
+}
 .fi-ta-header-cell {
     font-size: 0.6875rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
     color: #94a3b8 !important;
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
 }
-
 .fi-ta-row:hover td {
     background-color: #f8fafc !important;
 }
-
-.fi-ta-row td {
-    color: #374151 !important;
-    font-size: 0.875rem !important;
+.dark .fi-ta-row:hover td {
+    background-color: rgba(255, 255, 255, 0.03) !important;
 }
-
-/* ── Sections / form wrappers ────────────────────────────── */
-.fi-section {
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
-    border-radius: 1rem !important;
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04) !important;
-}
-
-.fi-section-header {
-    border-bottom-color: #f1f5f9 !important;
-}
-
-.fi-section-header-heading {
-    font-size: 0.9375rem !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.01em !important;
-    color: #0f172a !important;
+.dark .fi-ta-row td {
+    color: #cbd5e1 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* ── Buttons ─────────────────────────────────────────────── */
@@ -238,13 +335,11 @@
     font-size: 0.875rem !important;
     transition: all 0.15s ease !important;
 }
-
 .fi-btn-color-primary {
-    box-shadow: 0 4px 12px rgb(37 99 235 / 0.25) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
 }
-
 .fi-btn-color-primary:hover {
-    box-shadow: 0 6px 18px rgb(37 99 235 / 0.35) !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -260,53 +355,59 @@
 .fi-input,
 .fi-select-input,
 .fi-textarea {
-    background-color: #ffffff !important;
-    border-color: #e2e8f0 !important;
     border-radius: 0.625rem !important;
-    color: #0f172a !important;
     font-size: 0.875rem !important;
     transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
-
+.dark .fi-input,
+.dark .fi-select-input,
+.dark .fi-textarea {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+}
 .fi-input:focus,
 .fi-select-input:focus,
 .fi-textarea:focus {
     border-color: #2563eb !important;
-    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
 
 /* ── Modals ──────────────────────────────────────────────── */
 .fi-modal-window {
-    background-color: #ffffff !important;
     border-radius: 1.25rem !important;
-    box-shadow: 0 25px 60px -12px rgb(0 0 0 / 0.2) !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.2) !important;
+}
+.dark .fi-modal-window {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6) !important;
 }
 
 /* ── Dropdown menus ──────────────────────────────────────── */
 .fi-dropdown-panel {
-    background-color: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
     border-radius: 0.875rem !important;
-    box-shadow: 0 10px 30px -5px rgb(0 0 0 / 0.12) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12) !important;
+}
+.dark .fi-dropdown-panel {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.07) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ── Notifications ───────────────────────────────────────── */
 .fi-no-notification {
-    background-color: #ffffff !important;
     border-radius: 0.875rem !important;
     border: 1px solid #e2e8f0 !important;
-    box-shadow: 0 10px 30px -5px rgb(0 0 0 / 0.12) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12) !important;
+}
+.dark .fi-no-notification {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.07) !important;
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* ── Login page ──────────────────────────────────────────── */
-.fi-simple-page {
-    background: linear-gradient(135deg, #0A0F1E 0%, #0f172a 60%, #1e1b4b 100%) !important;
-    min-height: 100vh !important;
-}
-
-.fi-simple-main {
-    background-color: #ffffff !important;
-    border-radius: 1.25rem !important;
-    border: none !important;
-    box-shadow: 0 25px 60px -12px rgb(0 0 0 / 0.4) !important;
+/* ── BrandLogo area ──────────────────────────────────────── */
+.fi-logo {
+    filter: none;
 }

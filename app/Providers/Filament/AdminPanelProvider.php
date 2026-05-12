@@ -38,7 +38,6 @@ class AdminPanelProvider extends PanelProvider
             ->font('Nunito', provider: GoogleFontProvider::class)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->favicon(asset('images/biztrack-logo.svg'))
-            ->darkMode(false)
 
             // Colour palette: rich but purposeful
             ->colors([
