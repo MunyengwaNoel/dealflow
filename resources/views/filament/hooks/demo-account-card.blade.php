@@ -1,22 +1,22 @@
-<div class="mt-5 rounded-xl border border-blue-100 bg-blue-50/60 p-4">
-    <div class="flex items-center gap-2 mb-2.5">
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Live demo
+<div class="mt-6 rounded-xl border border-slate-600/60 bg-slate-950/80 p-4 ring-1 ring-white/[0.04]">
+    <div class="mb-2.5 flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-300">
+            <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true"></span>
+            {{ __('Live demo') }}
         </span>
-        <span class="text-xs text-slate-400">Try it now, no sign-up needed</span>
+        <span class="text-xs text-slate-500">{{ __('Try it now — no sign-up needed') }}</span>
     </div>
-    <div class="flex flex-col gap-1.5 text-sm">
-        <div class="flex items-center justify-between">
-            <span class="text-slate-500 text-xs">Email</span>
-            <span class="font-semibold text-blue-700 text-xs">demo@dealflow.app</span>
+    <dl class="flex flex-col gap-2 text-sm">
+        <div class="flex items-center justify-between gap-3">
+            <dt class="text-xs font-medium text-slate-500">{{ __('Email') }}</dt>
+            <dd class="font-mono text-xs font-semibold text-sky-300">demo@dealflow.app</dd>
         </div>
-        <div class="flex items-center justify-between">
-            <span class="text-slate-500 text-xs">Password</span>
-            <span class="font-mono font-semibold text-slate-700 text-xs">password</span>
+        <div class="flex items-center justify-between gap-3">
+            <dt class="text-xs font-medium text-slate-500">{{ __('Password') }}</dt>
+            <dd class="font-mono text-xs font-semibold text-slate-200">password</dd>
         </div>
-    </div>
-    <p class="mt-3 text-xs text-slate-400 leading-relaxed">
-        Pre-loaded with sample clients, deals, and invoices. Destructive actions are disabled.
+    </dl>
+    <p class="mt-3 text-xs leading-relaxed text-slate-500">
+        {{ __('Pre-loaded with sample clients, deals, and invoices. Destructive actions are disabled.') }}
     </p>
 </div>

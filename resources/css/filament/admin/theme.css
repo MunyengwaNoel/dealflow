@@ -16,52 +16,38 @@
     background-image: none !important;
 }
 
-/* ── Login page: dark gradient background ─────────────────── */
-/* Covers the whole login screen behind the card */
+/* ── Auth simple pages (login / register / reset) ─────────── */
+/* Flat background — no multi-stop gradients */
 .fi-simple-layout {
-    background: linear-gradient(145deg, #080e1c 0%, #0f172a 55%, #1e1b4b 100%);
+    background-color: #050816;
     min-height: 100vh;
 }
-/* Needed when Filament's own body class fights the above */
 .fi-body:has(.fi-simple-layout),
 .dark .fi-body:has(.fi-simple-layout) {
-    background: linear-gradient(145deg, #080e1c 0%, #0f172a 55%, #1e1b4b 100%) !important;
+    background-color: #050816 !important;
+    background-image: none !important;
 }
 
-/* Login card */
+/* Login / auth card */
 .fi-simple-main {
-    background-color: #1e293b !important;
+    background-color: #0f172a !important;
     border-radius: 1.25rem !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55) !important;
     ring: none !important;
 }
 
-/* Login heading + labels */
 .fi-simple-header-heading {
-    color: #f1f5f9 !important;
+    color: #f8fafc !important;
     font-weight: 800 !important;
     letter-spacing: -0.02em !important;
 }
 
-/* Input fields inside login card */
-.fi-simple-main .fi-input,
-.fi-simple-main input[type="email"],
-.fi-simple-main input[type="password"],
-.fi-simple-main input[type="text"] {
-    background-color: #0f172a !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #f1f5f9 !important;
-    border-radius: 0.625rem !important;
-}
-.fi-simple-main .fi-input:focus,
-.fi-simple-main input:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-    outline: none !important;
+.fi-simple-header-subheading {
+    color: #94a3b8 !important;
 }
 
-/* Labels inside login */
+/* Field labels */
 .fi-simple-main label,
 .fi-simple-main .fi-fo-field-wrp-label {
     color: #94a3b8 !important;
@@ -69,26 +55,102 @@
     font-weight: 600 !important;
 }
 
-/* Login button */
+/* Input wrapper (Filament wraps fields) — match dark inputs */
+.fi-simple-main .fi-input-wrp {
+    background-color: #020617 !important;
+    border-radius: 0.75rem !important;
+    box-shadow: none !important;
+    --tw-ring-color: rgba(255, 255, 255, 0.1) !important;
+}
+.fi-simple-main .fi-input-wrp:not(.fi-disabled):focus-within {
+    --tw-ring-color: rgba(59, 130, 246, 0.45) !important;
+}
+.fi-simple-main .fi-input-wrp-suffix {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Password reveal / suffix actions — ghost icon, no white “pill” */
+.fi-simple-main .fi-input-wrp-suffix .fi-ac-action.fi-btn,
+.fi-simple-main .fi-input-wrp-suffix .fi-btn {
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+    ring: none !important;
+    border: none !important;
+    transform: none !important;
+}
+.fi-simple-main .fi-input-wrp-suffix .fi-ac-action.fi-btn:hover,
+.fi-simple-main .fi-input-wrp-suffix .fi-btn:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    background-image: none !important;
+    color: #e2e8f0 !important;
+}
+
+/* Native inputs inside auth card */
+.fi-simple-main .fi-input,
+.fi-simple-main input[type="email"],
+.fi-simple-main input[type="password"],
+.fi-simple-main input[type="text"] {
+    background-color: transparent !important;
+    border: none !important;
+    color: #f1f5f9 !important;
+    border-radius: 0.75rem !important;
+    box-shadow: none !important;
+}
+.fi-simple-main .fi-input:focus,
+.fi-simple-main input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Primary submit — flat solid blue, no gradients or lift */
+.fi-simple-main .fi-btn.fi-color-primary:not(.fi-btn-outlined),
 .fi-simple-main .fi-btn-color-primary {
     background-color: #2563eb !important;
+    background-image: none !important;
     border-color: #2563eb !important;
     color: #ffffff !important;
     font-weight: 700 !important;
-    border-radius: 0.625rem !important;
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4) !important;
-    transition: all 0.15s ease !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease !important;
+    transform: none !important;
 }
+.fi-simple-main .fi-btn.fi-color-primary:not(.fi-btn-outlined):hover,
 .fi-simple-main .fi-btn-color-primary:hover {
     background-color: #1d4ed8 !important;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
-    transform: translateY(-1px) !important;
+    background-image: none !important;
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+    transform: none !important;
 }
 
-/* "Remember me" checkbox label */
 .fi-simple-main .fi-checkbox-label {
     color: #94a3b8 !important;
     font-size: 0.8125rem !important;
+}
+
+.fi-simple-main a.fi-link {
+    color: #93c5fd !important;
+}
+.fi-simple-main a.fi-link:hover {
+    color: #bfdbfe !important;
+}
+
+/* Remember-me checkbox — visible on dark card */
+.fi-simple-main .fi-checkbox-input {
+    background-color: #020617 !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+}
+.fi-simple-main .fi-checkbox-input:checked {
+    background-color: #2563eb !important;
+    box-shadow: none !important;
+}
+
+/* Field hints (e.g. forgot password) */
+.fi-simple-main .fi-fo-field-wrp-hint {
+    color: #94a3b8 !important;
 }
 
 /* ── Topbar ───────────────────────────────────────────────── */
@@ -328,19 +390,24 @@
     border-bottom-color: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* ── Buttons ─────────────────────────────────────────────── */
+/* ── Buttons (panel) — flat primary, no gradient overlays ─ */
 .fi-btn {
     border-radius: 0.625rem !important;
     font-weight: 600 !important;
     font-size: 0.875rem !important;
-    transition: all 0.15s ease !important;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease !important;
+}
+.fi-btn.fi-color-primary:not(.fi-btn-outlined),
+.fi-btn-color-primary:not(.fi-btn-outlined) {
+    background-image: none !important;
 }
 .fi-btn-color-primary {
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
 }
 .fi-btn-color-primary:hover {
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35) !important;
-    transform: translateY(-1px) !important;
+    background-image: none !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
+    transform: none !important;
 }
 
 /* ── Badges ──────────────────────────────────────────────── */
