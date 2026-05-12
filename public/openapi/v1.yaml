@@ -1,0 +1,766 @@
+openapi: 3.0.3
+info:
+  title: BizTrack API
+  version: 1.0.0
+  description: BizTrack REST API (Mobile) — v1
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Clients
+  - name: Documents
+  - name: Quotes
+  - name: Invoices
+  - name: Deals
+  - name: Cashflow
+  - name: Service Templates
+  - name: Dashboard
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+      description: "Use: Authorization: Bearer {token}"
+  schemas:
+    PaginationMeta:
+      type: object
+      description: "Returned as meta.pagination on list endpoints"
+      properties:
+        current_page: { type: integer, example: 1 }
+        last_page: { type: integer, example: 5 }
+        per_page: { type: integer, example: 15 }
+        total: { type: integer, example: 72 }
+    ApiSuccess:
+      type: object
+      required: [success, data, message]
+      properties:
+        success: { type: boolean, example: true }
+        data: { nullable: true }
+        message: { type: string, example: OK }
+        meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          nullable: true
+    ApiError:
+      type: object
+      required: [success, message]
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string, example: Validation error }
+        errors:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: array
+            items: { type: string }
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, example: demo@biztrack.app }
+                password: { type: string, example: password }
+                device_name: { type: string, example: mobile }
+      responses:
+        "200":
+          description: Token issued
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiSuccess"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          token: { type: string, example: "1|xxxxxxxxxxxxxxxxxxxx" }
+                          user: { type: object }
+                          tenant: { type: object }
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (revoke token)
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "401":
+          description: Unauthenticated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh token
+      responses:
+        "200":
+          description: Refreshed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "401":
+          description: Unauthenticated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user + tenant
+      responses:
+        "200":
+          description: Me
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "401":
+          description: Unauthenticated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /auth/profile:
+    put:
+      tags: [Auth]
+      summary: Update profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                avatar: { type: string, nullable: true }
+                phone: { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+
+  /auth/password:
+    put:
+      tags: [Auth]
+      summary: Change password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, password, password_confirmation]
+              properties:
+                current_password: { type: string }
+                password: { type: string }
+                password_confirmation: { type: string }
+      responses:
+        "200":
+          description: Changed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /clients:
+    get:
+      tags: [Clients]
+      summary: List clients
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [active, inactive, prospect] } }
+        - { name: client_type, in: query, schema: { type: string, enum: [individual, company] } }
+        - { name: per_page, in: query, schema: { type: integer, example: 15 } }
+        - { name: page, in: query, schema: { type: integer, example: 1 } }
+        - { name: sort_by, in: query, schema: { type: string } }
+        - { name: sort_dir, in: query, schema: { type: string, enum: [asc, desc] } }
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+    post:
+      tags: [Clients]
+      summary: Create client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, client_type, status]
+              properties:
+                name: { type: string }
+                trading_name: { type: string, nullable: true }
+                email: { type: string, nullable: true }
+                phone: { type: string, nullable: true }
+                whatsapp: { type: string, nullable: true }
+                address: { type: string, nullable: true }
+                city: { type: string, nullable: true }
+                country: { type: string, example: Zimbabwe }
+                client_type: { type: string, enum: [individual, company] }
+                status: { type: string, enum: [active, inactive, prospect] }
+                notes: { type: string, nullable: true }
+                assigned_to: { type: integer, nullable: true }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+
+  /clients/{id}:
+    get:
+      tags: [Clients]
+      summary: Client detail + stats
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: Detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+    put:
+      tags: [Clients]
+      summary: Update client
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+    delete:
+      tags: [Clients]
+      summary: Delete client (soft delete)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiSuccess" }
+
+  /clients/{id}/documents:
+    get:
+      tags: [Clients]
+      summary: Client documents
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+  /clients/{id}/quotes:
+    get:
+      tags: [Clients]
+      summary: Client quotes
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+  /clients/{id}/invoices:
+    get:
+      tags: [Clients]
+      summary: Client invoices
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+  /clients/{id}/deals:
+    get:
+      tags: [Clients]
+      summary: Client deals
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /documents:
+    get:
+      tags: [Documents]
+      summary: List documents
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: document_type, in: query, schema: { type: string } }
+        - { name: expiry_status, in: query, schema: { type: string, description: "expired|expiring|valid" } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Documents]
+      summary: Upload document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [client_id, document_type, title, file]
+              properties:
+                client_id: { type: integer }
+                document_type: { type: string }
+                title: { type: string }
+                issue_date: { type: string, format: date, nullable: true }
+                expiry_date: { type: string, format: date, nullable: true }
+                reminder_days_before: { type: integer, nullable: true }
+                notes: { type: string, nullable: true }
+                file: { type: string, format: binary }
+      responses:
+        "201": { description: Uploaded, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+        "422": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ApiError" } } } }
+
+  /documents/expiring:
+    get:
+      tags: [Documents]
+      summary: Documents expiring within 30 days
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /documents/{id}:
+    get:
+      tags: [Documents]
+      summary: Document detail + signed URL
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    put:
+      tags: [Documents]
+      summary: Update document metadata
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Documents]
+      summary: Delete document
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /documents/{id}/download:
+    get:
+      tags: [Documents]
+      summary: Download document (redirect)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "302": { description: Redirect to signed URL }
+
+  /quotes:
+    get:
+      tags: [Quotes]
+      summary: List quotes
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: per_page, in: query, schema: { type: integer } }
+        - { name: page, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Quotes]
+      summary: Create quote with line items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_id, items]
+              properties:
+                client_id: { type: integer }
+                valid_until: { type: string, format: date, nullable: true }
+                notes: { type: string, nullable: true }
+                discount_amount: { type: number, nullable: true }
+                discount_percent: { type: number, nullable: true }
+                items:
+                  type: array
+                  items:
+                    type: object
+                    required: [name, quantity, sell_price]
+                    properties:
+                      service_template_id: { type: integer, nullable: true }
+                      name: { type: string }
+                      description: { type: string, nullable: true }
+                      cost_price: { type: number, nullable: true }
+                      sell_price: { type: number }
+                      quantity: { type: integer, example: 1 }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /quotes/{id}:
+    get:
+      tags: [Quotes]
+      summary: Quote detail
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    put:
+      tags: [Quotes]
+      summary: Update quote
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Quotes]
+      summary: Delete quote
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /quotes/{quote}/convert-invoice:
+    post:
+      tags: [Quotes]
+      summary: Convert quote to invoice
+      parameters:
+        - { name: quote, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /quotes/{quote}/pdf:
+    get:
+      tags: [Quotes]
+      summary: Quote PDF
+      parameters:
+        - { name: quote, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: PDF }
+
+  /invoices:
+    get:
+      tags: [Invoices]
+      summary: List invoices
+      parameters:
+        - { name: status, in: query, schema: { type: string } }
+        - { name: date_from, in: query, schema: { type: string, format: date } }
+        - { name: date_to, in: query, schema: { type: string, format: date } }
+        - { name: per_page, in: query, schema: { type: integer } }
+        - { name: page, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Invoices]
+      summary: Create invoice
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /invoices/{id}:
+    get:
+      tags: [Invoices]
+      summary: Invoice detail + payments
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    put:
+      tags: [Invoices]
+      summary: Update invoice
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Invoices]
+      summary: Delete invoice
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /invoices/{id}/payments:
+    post:
+      tags: [Invoices]
+      summary: Record payment
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, payment_method]
+              properties:
+                amount: { type: number, example: 50 }
+                payment_method: { type: string, example: ecocash }
+                payment_date: { type: string, format: date, nullable: true }
+                reference: { type: string, nullable: true }
+                notes: { type: string, nullable: true }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /invoices/{id}/pdf:
+    get:
+      tags: [Invoices]
+      summary: Invoice PDF
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: PDF }
+
+  /deals:
+    get:
+      tags: [Deals]
+      summary: List deals
+      parameters:
+        - { name: client_id, in: query, schema: { type: integer } }
+        - { name: stage, in: query, schema: { type: string } }
+        - { name: priority, in: query, schema: { type: string } }
+        - { name: assigned_to, in: query, schema: { type: integer } }
+        - { name: per_page, in: query, schema: { type: integer } }
+        - { name: page, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Deals]
+      summary: Create deal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_id, title]
+              properties:
+                client_id: { type: integer }
+                title: { type: string }
+                description: { type: string, nullable: true }
+                stage: { type: string, nullable: true }
+                priority: { type: string, nullable: true }
+                value: { type: number, nullable: true }
+                expected_close_date: { type: string, format: date, nullable: true }
+                assigned_to: { type: integer, nullable: true }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /deals/{id}:
+    get:
+      tags: [Deals]
+      summary: Deal detail + activity timeline
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    put:
+      tags: [Deals]
+      summary: Update deal
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Deals]
+      summary: Delete deal (soft delete)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /cashflow-entries:
+    get:
+      tags: [Cashflow]
+      summary: List cashflow entries
+      parameters:
+        - { name: entry_type, in: query, schema: { type: string, enum: [income, expense] } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: per_page, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Cashflow]
+      summary: Create cashflow entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entry_type, amount, entry_date]
+              properties:
+                entry_type: { type: string, enum: [income, expense] }
+                category: { type: string, nullable: true }
+                description: { type: string, nullable: true }
+                amount: { type: number }
+                payment_method: { type: string, nullable: true }
+                entry_date: { type: string, format: date }
+                reference: { type: string, nullable: true }
+                client_id: { type: integer, nullable: true }
+                invoice_id: { type: integer, nullable: true }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /cashflow-entries/{cashflow_entry}:
+    get:
+      tags: [Cashflow]
+      summary: Cashflow entry detail
+      parameters:
+        - { name: cashflow_entry, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    put:
+      tags: [Cashflow]
+      summary: Update cashflow entry
+      parameters:
+        - { name: cashflow_entry, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Cashflow]
+      summary: Delete cashflow entry
+      parameters:
+        - { name: cashflow_entry, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /service-templates:
+    get:
+      tags: [Service Templates]
+      summary: List service templates
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    post:
+      tags: [Service Templates]
+      summary: Create service template (Pro only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, sell_price]
+              properties:
+                name: { type: string }
+                description: { type: string, nullable: true }
+                category: { type: string, nullable: true }
+                cost_price: { type: number, nullable: true }
+                sell_price: { type: number }
+                is_active: { type: boolean, default: true }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+        "403": { description: Upgrade required, content: { application/json: { schema: { $ref: "#/components/schemas/ApiError" } } } }
+
+  /service-templates/{service_template}:
+    put:
+      tags: [Service Templates]
+      summary: Update service template
+      parameters:
+        - { name: service_template, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+    delete:
+      tags: [Service Templates]
+      summary: Delete service template
+      parameters:
+        - { name: service_template, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Dashboard data
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /notifications:
+    get:
+      tags: [Dashboard]
+      summary: List notifications
+      parameters:
+        - { name: per_page, in: query, schema: { type: integer } }
+        - { name: page, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
+  /notifications/{id}/read:
+    post:
+      tags: [Dashboard]
+      summary: Mark notification read
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApiSuccess" } } } }
+
