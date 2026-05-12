@@ -4,15 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\InvoiceResource\Pages;
-use App\Filament\Resources\InvoiceResource\RelationManagers;
 use App\Models\Invoice;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class InvoiceResource extends Resource
 {
@@ -30,15 +27,33 @@ class InvoiceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('client_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('quote_id')
-                    ->numeric(),
+                Forms\Components\Select::make('client_id')
+                    ->label('Client')
+                    ->relationship('client', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Select::make('quote_id')
+                    ->label('Quote')
+                    ->relationship('quote', 'quote_number')
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
                 Forms\Components\TextInput::make('invoice_number')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('status')
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->helperText('Must be unique across all invoices.'),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'sent' => 'Sent',
+                        'partial' => 'Partially paid',
+                        'paid' => 'Paid',
+                        'overdue' => 'Overdue',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->default('draft')
                     ->required(),
                 Forms\Components\TextInput::make('subtotal')
                     ->required()
@@ -63,11 +78,17 @@ class InvoiceResource extends Resource
                 Forms\Components\DatePicker::make('issue_date'),
                 Forms\Components\DatePicker::make('due_date'),
                 Forms\Components\DatePicker::make('paid_date'),
-                Forms\Components\TextInput::make('payment_method'),
+                Forms\Components\Select::make('payment_method')
+                    ->options([
+                        'cash' => 'Cash',
+                        'ecocash' => 'EcoCash',
+                        'zipit' => 'ZIPIT',
+                        'bank_transfer' => 'Bank transfer',
+                        'other' => 'Other',
+                    ])
+                    ->nullable(),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
             ]);
     }
 
@@ -75,15 +96,26 @@ class InvoiceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('client_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('client.name')
+                    ->label('Client')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('quote_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('quote.quote_number')
+                    ->label('Quote')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('invoice_number')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'sent' => 'warning',
+                        'partial' => 'info',
+                        'paid' => 'success',
+                        'overdue' => 'danger',
+                        'cancelled' => 'gray',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('subtotal')
                     ->numeric()
                     ->sortable(),

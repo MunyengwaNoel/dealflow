@@ -9,6 +9,13 @@ class CreateQuote extends CreateRecord
 {
     protected static string $resource = QuoteResource::class;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['created_by'] = auth()->id();
+
+        return $data;
+    }
+
     protected function afterFill(): void
     {
         $clientId = request()->integer('client_id');

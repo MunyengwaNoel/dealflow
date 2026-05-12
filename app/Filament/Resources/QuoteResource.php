@@ -4,15 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\QuoteResource\Pages;
-use App\Filament\Resources\QuoteResource\RelationManagers;
 use App\Models\Quote;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class QuoteResource extends Resource
 {
@@ -30,13 +27,26 @@ class QuoteResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('client_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('client_id')
+                    ->label('Client')
+                    ->relationship('client', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('quote_number')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('status')
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->helperText('Must be unique across all quotes (for example QUO-2026-0001).'),
+                Forms\Components\Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'sent' => 'Sent',
+                        'accepted' => 'Accepted',
+                        'declined' => 'Declined',
+                        'invoiced' => 'Invoiced',
+                    ])
+                    ->default('draft')
                     ->required(),
                 Forms\Components\TextInput::make('subtotal')
                     ->required()
@@ -61,8 +71,6 @@ class QuoteResource extends Resource
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
                 Forms\Components\DatePicker::make('valid_until'),
-                Forms\Components\TextInput::make('created_by')
-                    ->numeric(),
             ]);
     }
 
@@ -70,12 +78,22 @@ class QuoteResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('client_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('client.name')
+                    ->label('Client')
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('quote_number')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'sent' => 'warning',
+                        'accepted' => 'success',
+                        'declined' => 'danger',
+                        'invoiced' => 'info',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('subtotal')
                     ->numeric()
                     ->sortable(),
