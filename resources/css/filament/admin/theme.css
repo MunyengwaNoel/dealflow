@@ -492,18 +492,18 @@
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* ── Brand logo (wide SVG wordmark — light plate on dark UI) ─ */
+/* ── Brand logo (wordmark sits on panel chrome — no white plate) ─ */
 .fi-logo {
     filter: none;
 }
 
 .fi-simple-header img.fi-logo,
-.dark .fi-sidebar-header img.fi-logo,
-.dark .fi-topbar img.fi-logo {
-    background-color: #ffffff !important;
-    border-radius: 0.5rem !important;
-    padding: 0.2rem 0.45rem !important;
-    box-sizing: content-box !important;
+.fi-sidebar-header img.fi-logo,
+.fi-topbar img.fi-logo {
     width: auto !important;
     max-width: min(100%, 14rem) !important;
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-sizing: content-box !important;
 }

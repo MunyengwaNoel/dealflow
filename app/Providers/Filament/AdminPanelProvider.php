@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->brandName(config('app.name', 'DealFlow Pro'))
             ->brandLogo(asset('images/dealflow-logo.svg'))
+            ->darkModeBrandLogo(asset('images/dealflow-logo-on-dark.svg'))
             ->brandLogoHeight('2.75rem')
             ->font('Plus Jakarta Sans', provider: GoogleFontProvider::class)
             ->viteTheme('resources/css/filament/admin/theme.css')
