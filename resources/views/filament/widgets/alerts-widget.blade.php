@@ -21,7 +21,8 @@
             {{-- Expiring documents --}}
             @forelse($expiringDocs as $doc)
                 @php
-                    $daysLeft = now()->diffInDays($doc->expiry_date, false);
+                    $expiryDay = \Illuminate\Support\Carbon::parse($doc->expiry_date)->startOfDay();
+                    $daysLeft = (int) now()->startOfDay()->diffInDays($expiryDay, false);
                     $urgent   = $daysLeft <= 7;
                 @endphp
                 <div class="flex items-start gap-3 p-3 rounded-xl {{ $urgent ? 'bg-red-50 border border-red-100' : 'bg-amber-50 border border-amber-100' }}">
