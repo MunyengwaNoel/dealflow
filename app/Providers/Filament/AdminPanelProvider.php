@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
 use App\Http\Middleware\SetTenantFromUser;
 use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
@@ -9,13 +10,10 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use App\Filament\Pages\Dashboard;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -41,12 +39,12 @@ class AdminPanelProvider extends PanelProvider
 
             // Colour palette: rich but purposeful
             ->colors([
-                'primary'  => Color::hex('#2563EB'),
-                'info'     => Color::hex('#0EA5E9'),
-                'success'  => Color::hex('#10B981'),
-                'warning'  => Color::hex('#F59E0B'),
-                'danger'   => Color::hex('#EF4444'),
-                'gray'     => Color::Slate,
+                'primary' => Color::hex('#2563EB'),
+                'info' => Color::hex('#0EA5E9'),
+                'success' => Color::hex('#10B981'),
+                'warning' => Color::hex('#F59E0B'),
+                'danger' => Color::hex('#EF4444'),
+                'gray' => Color::Slate,
             ])
 
             // Sidebar collapses to icons on desktop for more working space
@@ -75,6 +73,12 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => request()->routeIs('filament.admin.pages.dashboard')
                     ? view('filament.hooks.dashboard-header')->render()
                     : '',
+            )
+
+            // Sign up link above the Filament login form
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
+                fn (): string => view('filament.hooks.auth-register-link')->render(),
             )
 
             // Demo credentials card below the login form

@@ -30,6 +30,7 @@ class TenantService
                 'tenant_id' => $tenant->id,
                 'name' => $input['owner_name'],
                 'email' => $input['owner_email'],
+                'phone' => $input['owner_phone'] ?? null,
                 'password' => $input['owner_password'],
                 'role' => 'owner',
             ]);
