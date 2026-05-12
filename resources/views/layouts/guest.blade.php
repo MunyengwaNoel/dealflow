@@ -24,17 +24,13 @@
 
         <div class="relative flex min-h-screen flex-col">
             <header class="flex justify-center px-4 pt-5 pb-1 sm:pt-7 sm:pb-2">
-                <a href="/" class="group flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-2.5 shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/10 hover:bg-white/[0.06]">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-700 shadow-md shadow-blue-600/30 transition-transform group-hover:scale-[1.03]">
-                        <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/>
-                            <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="text-left leading-tight">
-                        <span class="block text-lg font-extrabold tracking-tight text-white">{{ config('app.name', 'DealFlow Pro') }}</span>
-                        <span class="text-[11px] font-medium text-cyan-200/80">{{ __('Compliance & operations') }}</span>
-                    </div>
+                <a href="/" class="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/15 hover:bg-white/[0.07]">
+                    <span class="rounded-lg bg-white px-2 py-1 shadow-sm ring-1 ring-slate-200/80">
+                        <img src="{{ asset('images/dealflow-logo.svg') }}" alt="{{ config('app.name', 'Deal Flow') }}" class="h-7 w-auto max-h-8 max-w-[min(52vw,220px)] object-contain object-left sm:h-8" width="640" height="180" loading="eager" decoding="async">
+                    </span>
+                    <span class="hidden text-left leading-tight sm:block">
+                        <span class="block text-[11px] font-medium text-cyan-200/90">{{ __('Compliance & operations') }}</span>
+                    </span>
                 </a>
             </header>
 

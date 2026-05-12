@@ -21,17 +21,10 @@
         class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.25rem]">
-            <a href="/" class="flex items-center gap-2.5 group shrink-0">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-600/25 group-hover:scale-[1.03] transition-transform">
-                    <svg class="w-[18px] h-[18px] text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/>
-                        <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="flex flex-col leading-none">
-                    <span class="text-[15px] font-extrabold tracking-tight text-white">DealFlow</span>
-                    <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-300/90">Pro</span>
-                </div>
+            <a href="/" class="group flex shrink-0 items-center gap-2 transition-opacity hover:opacity-95">
+                <span class="rounded-lg bg-white px-2 py-1 shadow-md ring-1 ring-white/20">
+                    <img src="{{ asset('images/dealflow-logo.svg') }}" alt="Deal Flow" class="h-7 w-auto max-h-8 max-w-[min(48vw,240px)] object-contain object-left sm:h-8" width="640" height="180" loading="eager" decoding="async">
+                </span>
             </a>
 
             <nav class="hidden lg:flex items-center gap-0.5 rounded-full bg-white/5 border border-white/10 px-1 py-1">
@@ -570,16 +563,9 @@
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-10">
             <div class="max-w-sm">
                 <div class="flex items-center gap-2.5">
-                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600">
-                        <svg class="h-[18px] w-[18px] text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                            <path d="M2 4a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V4z"/>
-                            <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="leading-none">
-                        <span class="block text-base font-extrabold text-white">DealFlow</span>
-                        <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400/90">Pro</span>
-                    </div>
+                    <span class="rounded-lg bg-white px-2.5 py-1.5 shadow-md ring-1 ring-white/10">
+                        <img src="{{ asset('images/dealflow-logo.svg') }}" alt="Deal Flow" class="h-8 w-auto max-w-[200px] object-contain object-left sm:h-9 sm:max-w-[240px]" width="640" height="180" loading="lazy" decoding="async">
+                    </span>
                 </div>
                 <p class="mt-4 text-sm leading-relaxed">Registration through renewal—alerts, documents, and revenue in one place for consultancies and SMEs.</p>
             </div>
