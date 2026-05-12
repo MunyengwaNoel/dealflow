@@ -24,6 +24,23 @@ class Client extends Model
         'status',
         'notes',
         'assigned_to',
+        'bp_number',
+        'tin_number',
+        'registration_date',
+        'registered_address',
+        'physical_address',
+        'contact_person_name',
+        'contact_person_email',
+        'contact_person_phone',
+        'industry',
+        'source',
+        'lifetime_value',
+    ];
+
+    protected $casts = [
+        'registration_date' => 'date',
+        'physical_address' => 'array',
+        'lifetime_value' => 'decimal:2',
     ];
 
     public function assignedTo()

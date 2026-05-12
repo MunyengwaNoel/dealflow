@@ -47,8 +47,9 @@ class QuoteService
         $fixedDiscount = (float) ($attrs['discount_amount'] ?? 0);
         $percent = (float) ($attrs['discount_percent'] ?? 0);
         $discount = $fixedDiscount + round($subtotal * ($percent / 100), 2);
+        $tax = (float) ($attrs['tax_amount'] ?? 0);
 
-        $total = max(0, round($subtotal - $discount, 2));
+        $total = max(0, round($subtotal - $discount + $tax, 2));
 
         $quote->forceFill([
             'subtotal' => round($subtotal, 2),

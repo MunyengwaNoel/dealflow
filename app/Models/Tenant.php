@@ -21,10 +21,12 @@ class Tenant extends Model
         'website',
         'owner_id',
         'stripe_customer_id',
+        'settings',
     ];
 
     protected $casts = [
         'plan_expires_at' => 'datetime',
+        'settings' => 'array',
     ];
 
     public function owner()

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ServiceTemplate;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\DealFlowTemplateCatalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -37,33 +38,33 @@ class TenantService
 
             $tenant->update(['owner_id' => $owner->id]);
 
-            $this->seedServiceTemplates($tenant);
+            $this->seedServiceTemplates($tenant->fresh(), $owner->id);
 
             return ['tenant' => $tenant->fresh(), 'owner' => $owner->fresh()];
         });
     }
 
-    public function seedServiceTemplates(Tenant $tenant): void
+    public function seedServiceTemplates(Tenant $tenant, ?int $createdByUserId = null): void
     {
-        foreach (self::defaultTemplateRows() as $row) {
-            ServiceTemplate::query()->create(array_merge($row, [
-                'tenant_id' => $tenant->id,
-                'is_active' => true,
-            ]));
-        }
+        $this->ensureDealFlowCatalog($tenant, $createdByUserId ?? $tenant->owner_id);
     }
 
-    /**
-     * @return list<array{name: string, description: string, category: string, cost_price: string, sell_price: string}>
-     */
-    public static function defaultTemplateRows(): array
+    public function ensureDealFlowCatalog(Tenant $tenant, ?int $createdByUserId = null): void
     {
-        return [
-            ['name' => 'Consulting (hour)', 'description' => 'Professional consulting', 'category' => 'Services', 'cost_price' => '40.00', 'sell_price' => '85.00'],
-            ['name' => 'Site visit', 'description' => 'On-site assessment', 'category' => 'Services', 'cost_price' => '25.00', 'sell_price' => '55.00'],
-            ['name' => 'Installation', 'description' => 'Standard installation', 'category' => 'Install', 'cost_price' => '120.00', 'sell_price' => '220.00'],
-            ['name' => 'Maintenance retainer', 'description' => 'Monthly maintenance', 'category' => 'Recurring', 'cost_price' => '150.00', 'sell_price' => '299.00'],
-            ['name' => 'Emergency call-out', 'description' => 'After-hours support', 'category' => 'Support', 'cost_price' => '60.00', 'sell_price' => '150.00'],
-        ];
+        $uid = $createdByUserId ?? $tenant->owner_id;
+        foreach (DealFlowTemplateCatalog::seedRows() as $row) {
+            ServiceTemplate::query()->updateOrCreate(
+                [
+                    'tenant_id' => $tenant->id,
+                    'template_code' => $row['template_code'],
+                ],
+                array_merge($row, [
+                    'tenant_id' => $tenant->id,
+                    'is_active' => true,
+                    'status' => 'active',
+                    'created_by' => $uid,
+                ])
+            );
+        }
     }
 }

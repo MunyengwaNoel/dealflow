@@ -45,10 +45,7 @@ class DemoTenantSeeder extends Seeder
                 'owner_id' => $owner->id,
             ])->save();
 
-            $svc = new TenantService;
-            if (ServiceTemplate::query()->where('tenant_id', $tenant->id)->doesntExist()) {
-                $svc->seedServiceTemplates($tenant);
-            }
+            (new TenantService)->ensureDealFlowCatalog($tenant, $owner->id);
 
             if (Client::query()->where('tenant_id', $tenant->id)->exists()) {
                 $this->command?->info('Demo tenant already exists with data; skipped re-seeding fixtures. Login: '.DemoUser::EMAIL.' / password');
@@ -56,8 +53,7 @@ class DemoTenantSeeder extends Seeder
                 return;
             }
         } else {
-            $svc = new TenantService;
-            $created = $svc->createTenant([
+            $created = (new TenantService)->createTenant([
                 'name' => 'Demo Company Ltd',
                 'slug' => $slug,
                 'plan' => 'pro',
@@ -70,6 +66,7 @@ class DemoTenantSeeder extends Seeder
 
             $tenant = $created['tenant'];
             $owner = $created['owner'];
+            (new TenantService)->ensureDealFlowCatalog($tenant, $owner->id);
         }
 
         app()->instance('tenant', $tenant);
@@ -99,12 +96,12 @@ class DemoTenantSeeder extends Seeder
                 Document::query()->create([
                     'client_id' => $client->id,
                     'document_type' => $faker->randomElement([
-                    'certificate_of_incorporation',
-                    'tax_clearance',
-                    'praz_certificate',
-                    'company_profile',
-                    'other',
-                ]),
+                        'certificate_of_incorporation',
+                        'tax_clearance',
+                        'praz_certificate',
+                        'company_profile',
+                        'other',
+                    ]),
                     'title' => $faker->sentence(3),
                     'file_path' => $path,
                     'file_size' => 128,
@@ -125,7 +122,7 @@ class DemoTenantSeeder extends Seeder
             $quote = Quote::query()->create([
                 'client_id' => $client->id,
                 'quote_number' => QuoteService::nextQuoteNumber($tenant->id),
-                'status' => $faker->randomElement(['draft', 'sent', 'accepted', 'accepted', 'accepted']),
+                'status' => $faker->randomElement(['draft', 'sent', 'viewed', 'accepted', 'accepted', 'accepted']),
                 'discount_amount' => 0,
                 'discount_percent' => 0,
                 'notes' => $faker->optional()->sentence(),
@@ -171,8 +168,8 @@ class DemoTenantSeeder extends Seeder
                 'client_id' => $client->id,
                 'title' => $faker->catchPhrase(),
                 'description' => $faker->optional()->paragraph(),
-                'stage' => $faker->randomElement(['lead', 'follow_up', 'proposal', 'negotiation', 'won', 'lost']),
-                'priority' => $faker->randomElement(['low', 'medium', 'high']),
+                'stage' => $faker->randomElement(['lead', 'potential', 'quoted', 'negotiation', 'won', 'lost']),
+                'priority' => $faker->randomElement(['hot', 'warm', 'cold']),
                 'value' => $faker->randomFloat(2, 200, 25000),
                 'expected_close_date' => now()->addDays($faker->numberBetween(-5, 45))->toDateString(),
                 'assigned_to' => $owner->id,

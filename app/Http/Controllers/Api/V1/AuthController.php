@@ -23,6 +23,9 @@ class AuthController extends ApiController
         if (! $user->tenant_id) {
             return $this->errorResponse('This account is not linked to an organization.', ['email' => ['No tenant assigned.']], 422);
         }
+
+        $user->forceFill(['last_login_at' => now()])->saveQuietly();
+
         $tokenName = $request->string('device_name')->toString() ?: 'api';
 
         $token = $user->createToken($tokenName)->plainTextToken;

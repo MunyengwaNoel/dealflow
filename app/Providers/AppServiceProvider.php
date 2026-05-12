@@ -8,6 +8,7 @@ use App\Models\QuoteItem;
 use App\Services\InvoiceService;
 use App\Services\QuoteService;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
             }
             if (! $quote->created_by && auth()->check()) {
                 $quote->created_by = auth()->id();
+            }
+            if (empty($quote->portal_token)) {
+                $quote->portal_token = Str::random(48);
             }
         });
 
