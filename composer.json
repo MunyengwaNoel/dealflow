@@ -16,6 +16,7 @@
         "mokhosh/filament-kanban": "^2.11"
     },
     "require-dev": {
+        "deployer/deployer": "^8.0",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.1",
