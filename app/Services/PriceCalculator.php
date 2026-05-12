@@ -33,7 +33,7 @@ class PriceCalculator
 
             $normalized[] = [
                 'service_type' => (string) ($line['service_type'] ?? 'custom'),
-                'name' => (string) $line['name'],
+                'name' => (string) ($line['name'] ?? 'Line item'),
                 'unit_price' => $unitPrice,
                 'unit_cost' => $unitCost,
                 'quantity' => $qty,
@@ -145,6 +145,7 @@ class PriceCalculator
             }
             $lines[] = [
                 'service_type' => OrderServiceType::Website->value,
+                'name' => 'Website ('.$pkg.')',
                 'unit_price' => round($base + $addonSell, 2),
                 'unit_cost' => round($cost + $addonCost, 2),
                 'quantity' => 1,
@@ -170,6 +171,7 @@ class PriceCalculator
             $extraSell = $extra * 3.0;
             $lines[] = [
                 'service_type' => OrderServiceType::Email->value,
+                'name' => 'Email hosting ('.$pkg.')',
                 'unit_price' => round($base + $extraSell, 2),
                 'unit_cost' => round($cost + $extra * 1.5, 2),
                 'quantity' => 1,
@@ -211,6 +213,7 @@ class PriceCalculator
             }
             $lines[] = [
                 'service_type' => OrderServiceType::CompanyReg->value,
+                'name' => 'Company registration',
                 'unit_price' => round($sell, 2),
                 'unit_cost' => round($cost, 2),
                 'quantity' => 1,
@@ -225,6 +228,7 @@ class PriceCalculator
             $sell = $urgent ? 80.0 : 50.0;
             $lines[] = [
                 'service_type' => OrderServiceType::TaxClearance->value,
+                'name' => $urgent ? 'Tax clearance (urgent)' : 'Tax clearance',
                 'unit_price' => $sell,
                 'unit_cost' => round($sell * 0.5, 2),
                 'quantity' => 1,
@@ -236,6 +240,7 @@ class PriceCalculator
         if (in_array('business_plan', $services, true)) {
             $lines[] = [
                 'service_type' => OrderServiceType::BusinessPlan->value,
+                'name' => 'Business plan',
                 'unit_price' => 200.0,
                 'unit_cost' => 90.0,
                 'quantity' => 1,
