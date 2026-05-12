@@ -21,10 +21,8 @@
         class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="flex items-center justify-between h-16 md:h-[4.25rem]">
-            <a href="/" class="group flex shrink-0 items-center gap-2 transition-opacity hover:opacity-95">
-                <span class="rounded-lg bg-white px-2 py-1 shadow-md ring-1 ring-white/20">
-                    <img src="{{ asset('images/dealflow-logo.svg') }}" alt="Deal Flow" class="h-7 w-auto max-h-8 max-w-[min(48vw,240px)] object-contain object-left sm:h-8" width="640" height="180" loading="eager" decoding="async">
-                </span>
+            <a href="/" class="group flex shrink-0 items-center transition-opacity hover:opacity-90">
+                <img src="{{ asset('images/dealflow-logo-on-dark.svg') }}" alt="Deal Flow" class="h-7 w-auto max-h-8 max-w-[min(48vw,240px)] object-contain object-left sm:h-8" width="268" height="86" loading="eager" decoding="async">
             </a>
 
             <nav class="hidden lg:flex items-center gap-0.5 rounded-full bg-white/5 border border-white/10 px-1 py-1">
@@ -562,10 +560,8 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 md:py-14">
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-10">
             <div class="max-w-sm">
-                <div class="flex items-center gap-2.5">
-                    <span class="rounded-lg bg-white px-2.5 py-1.5 shadow-md ring-1 ring-white/10">
-                        <img src="{{ asset('images/dealflow-logo.svg') }}" alt="Deal Flow" class="h-8 w-auto max-w-[200px] object-contain object-left sm:h-9 sm:max-w-[240px]" width="640" height="180" loading="lazy" decoding="async">
-                    </span>
+                <div class="flex items-center">
+                    <img src="{{ asset('images/dealflow-logo-on-dark.svg') }}" alt="Deal Flow" class="h-8 w-auto max-w-[200px] object-contain object-left sm:h-9 sm:max-w-[240px]" width="268" height="86" loading="lazy" decoding="async">
                 </div>
                 <p class="mt-4 text-sm leading-relaxed">Registration through renewal—alerts, documents, and revenue in one place for consultancies and SMEs.</p>
             </div>

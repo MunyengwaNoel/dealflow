@@ -25,9 +25,7 @@
         <div class="relative flex min-h-screen flex-col">
             <header class="flex justify-center px-4 pt-5 pb-1 sm:pt-7 sm:pb-2">
                 <a href="/" class="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 shadow-lg shadow-black/20 backdrop-blur-sm transition-all hover:border-white/15 hover:bg-white/[0.07]">
-                    <span class="rounded-lg bg-white px-2 py-1 shadow-sm ring-1 ring-slate-200/80">
-                        <img src="{{ asset('images/dealflow-logo.svg') }}" alt="{{ config('app.name', 'Deal Flow') }}" class="h-7 w-auto max-h-8 max-w-[min(52vw,220px)] object-contain object-left sm:h-8" width="640" height="180" loading="eager" decoding="async">
-                    </span>
+                    <img src="{{ asset('images/dealflow-logo-on-dark.svg') }}" alt="{{ config('app.name', 'Deal Flow') }}" class="h-7 w-auto max-h-8 max-w-[min(52vw,220px)] object-contain object-left sm:h-8" width="268" height="86" loading="eager" decoding="async">
                     <span class="hidden text-left leading-tight sm:block">
                         <span class="block text-[11px] font-medium text-cyan-200/90">{{ __('Compliance & operations') }}</span>
                     </span>
