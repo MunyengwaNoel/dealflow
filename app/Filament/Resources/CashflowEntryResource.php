@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CashflowEntryResource extends Resource
 {
@@ -22,6 +23,12 @@ class CashflowEntryResource extends Resource
     protected static ?string $navigationGroup = 'Finance';
 
     protected static ?int $navigationSort = 10;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['client', 'invoice', 'recordedBy']);
+    }
 
     public static function form(Form $form): Form
     {
@@ -60,12 +67,18 @@ class CashflowEntryResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('reference')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('client_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('invoice_id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('recorded_by')
-                    ->numeric(),
+                Forms\Components\Select::make('client_id')
+                    ->label(__('Client'))
+                    ->relationship('client', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
+                Forms\Components\Select::make('invoice_id')
+                    ->label(__('Invoice'))
+                    ->relationship('invoice', 'invoice_number')
+                    ->searchable()
+                    ->preload()
+                    ->nullable(),
             ]);
     }
 
@@ -104,14 +117,15 @@ class CashflowEntryResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('reference')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('client_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('client.name')
+                    ->label(__('Client'))
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('invoice_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('invoice.invoice_number')
+                    ->label(__('Invoice'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('recorded_by')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('recordedBy.name')
+                    ->label(__('Recorded by'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
