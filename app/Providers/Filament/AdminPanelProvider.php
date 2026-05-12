@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Dashboard;
 use App\Http\Middleware\SetTenantFromUser;
 use Filament\FontProviders\GoogleFontProvider;
@@ -29,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(Login::class)
             ->brandName('BizTrack')
             ->brandLogo(asset('images/biztrack-logo.svg'))
             ->brandLogoHeight('2rem')
