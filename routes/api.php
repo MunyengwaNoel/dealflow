@@ -20,6 +20,10 @@ Route::prefix('v1')
             Route::post('/auth/login', [AuthController::class, 'login']);
         });
 
+        Route::middleware(['throttle:30,1'])->group(function () {
+            Route::get('quotes/public/{token}', [QuoteController::class, 'publicShow']);
+        });
+
         Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
             Route::post('/auth/logout', [AuthController::class, 'logout']);
             Route::post('/auth/refresh', [AuthController::class, 'refresh']);
@@ -46,6 +50,7 @@ Route::prefix('v1')
 
             Route::middleware('plan:quotes')->group(function () {
                 Route::apiResource('quotes', QuoteController::class);
+                Route::post('quotes/{quote}/send', [QuoteController::class, 'send']);
                 Route::post('quotes/{quote}/convert-invoice', [QuoteController::class, 'convertToInvoice']);
                 Route::get('quotes/{quote}/pdf', [QuoteController::class, 'pdf'])->middleware('plan:pdf');
             });

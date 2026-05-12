@@ -11,6 +11,8 @@
         th { background: #f3f4f6; }
         .muted { color: #6b7280; font-size: 11px; }
         .right { text-align: right; }
+        .qr { margin-top: 16px; }
+        .qr img { width: 120px; height: 120px; }
     </style>
 </head>
 <body>
@@ -42,9 +44,37 @@
     </table>
 
     <p style="margin-top:16px;"><strong>Subtotal:</strong> {{ number_format((float) $quote->subtotal, 2) }}</p>
+    @if((float)($quote->tax_amount ?? 0) > 0)
+        <p><strong>Tax:</strong> {{ number_format((float) $quote->tax_amount, 2) }}</p>
+    @endif
     <p><strong>Total:</strong> {{ number_format((float) $quote->total, 2) }}</p>
+    @if($quote->payment_terms)
+        <p class="muted"><strong>Payment terms:</strong> {{ $quote->payment_terms }}</p>
+    @endif
     @if($quote->notes)
         <p class="muted">{{ $quote->notes }}</p>
+    @endif
+
+    @php
+        $portalUrl = $quote->portalUrl();
+        $qrDataUri = null;
+        if ($portalUrl) {
+            try {
+                $qr = \Endroid\QrCode\QrCode::create($portalUrl)->setSize(140)->setMargin(4);
+                $qrDataUri = (new \Endroid\QrCode\Writer\PngWriter)->write($qr)->getDataUri();
+            } catch (\Throwable $e) {
+                $qrDataUri = null;
+            }
+        }
+    @endphp
+    @if($portalUrl)
+        <div class="qr">
+            <p class="muted"><strong>View quote online</strong></p>
+            @if($qrDataUri)
+                <p><img src="{{ $qrDataUri }}" alt="Quote portal QR"></p>
+            @endif
+            <p class="muted">{{ $portalUrl }}</p>
+        </div>
     @endif
 </body>
 </html>

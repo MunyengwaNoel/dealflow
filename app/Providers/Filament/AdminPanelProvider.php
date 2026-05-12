@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->brandName('BizTrack')
+            ->brandName(config('app.name', 'DealFlow Pro'))
             ->brandLogo(asset('images/biztrack-logo.svg'))
             ->brandLogoHeight('2rem')
             ->font('Nunito', provider: GoogleFontProvider::class)
@@ -54,7 +54,7 @@ class AdminPanelProvider extends PanelProvider
             // Group navigation items so the sidebar is scannable, not a wall of links
             ->navigationGroups([
                 NavigationGroup::make('Clients')
-                    ->label('Clients')
+                    ->label('Customers')
                     ->icon('heroicon-o-user-group'),
                 NavigationGroup::make('Sales')
                     ->label('Sales')

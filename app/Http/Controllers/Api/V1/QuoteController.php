@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Concerns\RejectsDemoWrites;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Services\QuoteService;
+use App\Tenancy\TenantScope;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,34 @@ class QuoteController extends ApiController
 
     public function __construct(
         protected QuoteService $quotes
-    ) {
+    ) {}
+
+    public function publicShow(string $token)
+    {
+        $quote = Quote::query()
+            ->withoutGlobalScope(TenantScope::class)
+            ->where('portal_token', $token)
+            ->with(['items.serviceTemplate', 'client', 'tenant', 'deal'])
+            ->firstOrFail();
+
+        return $this->successResponse($quote, 'OK');
+    }
+
+    public function send(Request $request, Quote $quote)
+    {
+        if ($r = $this->rejectIfDemo($request)) {
+            return $r;
+        }
+
+        $quote->forceFill([
+            'status' => 'sent',
+            'sent_at' => now(),
+        ])->save();
+
+        return $this->successResponse([
+            'quote' => $quote->fresh()->load(['items', 'client']),
+            'portal_url' => $quote->portalUrl(),
+        ], 'Quote marked as sent.');
     }
 
     public function index(Request $request)
@@ -50,9 +78,15 @@ class QuoteController extends ApiController
 
         $data = $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'status' => 'nullable|in:draft,sent,accepted,declined,invoiced',
+            'status' => 'nullable|in:draft,sent,viewed,accepted,declined,expired,invoiced',
             'discount_amount' => 'nullable|numeric|min:0',
             'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'tax_amount' => 'nullable|numeric|min:0',
+            'payment_terms' => 'nullable|string',
+            'validity_days' => 'nullable|integer|min:1|max:365',
+            'demo_links' => 'nullable|array',
+            'deal_id' => 'nullable|exists:deals,id',
+            'service_template_id' => 'nullable|exists:service_templates,id',
             'notes' => 'nullable|string',
             'valid_until' => 'nullable|date',
             'items' => 'nullable|array',
@@ -94,9 +128,15 @@ class QuoteController extends ApiController
 
         $data = $request->validate([
             'client_id' => 'sometimes|exists:clients,id',
-            'status' => 'nullable|in:draft,sent,accepted,declined,invoiced',
+            'status' => 'nullable|in:draft,sent,viewed,accepted,declined,expired,invoiced',
             'discount_amount' => 'nullable|numeric|min:0',
             'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'tax_amount' => 'nullable|numeric|min:0',
+            'payment_terms' => 'nullable|string',
+            'validity_days' => 'nullable|integer|min:1|max:365',
+            'demo_links' => 'nullable|array',
+            'deal_id' => 'nullable|exists:deals,id',
+            'service_template_id' => 'nullable|exists:service_templates,id',
             'notes' => 'nullable|string',
             'valid_until' => 'nullable|date',
             'items' => 'nullable|array',
@@ -109,7 +149,7 @@ class QuoteController extends ApiController
             'items.*.quantity' => 'required_with:items|numeric|min:0.01',
         ]);
 
-        return DB::transaction(function () use ($request, $quote, $data) {
+        return DB::transaction(function () use ($quote, $data) {
             $items = $data['items'] ?? null;
             unset($data['items']);
             $quote->update($data);

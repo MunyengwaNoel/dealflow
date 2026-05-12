@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\DealPriority;
+use App\Enums\DealStage;
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\DealResource\Pages;
-use App\Filament\Resources\DealResource\RelationManagers;
 use App\Models\Deal;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -30,30 +31,50 @@ class DealResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('client_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('client_id')
+                    ->relationship('client', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('stage')
+                Forms\Components\Select::make('stage')
+                    ->options(collect(DealStage::cases())->mapWithKeys(fn ($c) => [$c->value => $c->getTitle()]))
                     ->required(),
-                Forms\Components\TextInput::make('priority')
+                Forms\Components\Select::make('priority')
+                    ->options(collect(DealPriority::cases())->mapWithKeys(fn ($c) => [$c->value => $c->label()]))
                     ->required(),
+                Forms\Components\Select::make('service_template_id')
+                    ->relationship('serviceTemplate', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label('Service template'),
                 Forms\Components\TextInput::make('value')
-                    ->required()
                     ->numeric()
-                    ->default(0.00),
+                    ->default(0.00)
+                    ->prefix('$'),
+                Forms\Components\TextInput::make('probability_percent')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->default(25),
                 Forms\Components\DatePicker::make('expected_close_date'),
                 Forms\Components\DatePicker::make('actual_close_date'),
-                Forms\Components\TextInput::make('lost_reason')
+                Forms\Components\TextInput::make('source')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('competitor_name')
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('lost_reason')
+                    ->columnSpanFull(),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('assigned_to')
-                    ->numeric(),
+                Forms\Components\Select::make('assigned_to')
+                    ->relationship('assignedTo', 'name')
+                    ->searchable()
+                    ->preload(),
             ]);
     }
 
@@ -61,36 +82,31 @@ class DealResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('client_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('deal_number')
+                    ->label('Deal #')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('client.name')
+                    ->label('Customer')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('stage'),
-                Tables\Columns\TextColumn::make('priority'),
+                Tables\Columns\TextColumn::make('stage')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('priority')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('priority_score')
+                    ->label('Score')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('value')
-                    ->numeric()
+                    ->money('USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('expected_close_date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('actual_close_date')
-                    ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('lost_reason')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('assigned_to')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('assignedTo.name')
+                    ->label('Agent')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

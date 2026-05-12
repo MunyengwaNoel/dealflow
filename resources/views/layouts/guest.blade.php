@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'BizTrack') }}</title>
+        <title>{{ config('app.name', 'DealFlow Pro') }}</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,20 +32,24 @@
                             <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
                         </svg>
                     </div>
-                    <span class="text-xl font-black text-white tracking-tight">BizTrack</span>
+                    <span class="text-xl font-black text-white tracking-tight">{{ config('app.name', 'DealFlow Pro') }}</span>
                 </a>
             </div>
 
             {{-- Card --}}
             <div class="flex flex-1 items-center justify-center px-4 py-8">
-                <div class="w-full max-w-sm">
-                    <div class="bg-white rounded-2xl shadow-2xl shadow-black/40 px-8 py-8">
-                        {{ $slot }}
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    <div class="w-full max-w-sm">
+                        <div class="bg-white rounded-2xl shadow-2xl shadow-black/40 px-8 py-8">
+                            {{ $slot }}
+                        </div>
+                        <p class="mt-6 text-center text-xs text-slate-500">
+                            <a href="/" class="hover:text-slate-300 transition-colors">← Back to homepage</a>
+                        </p>
                     </div>
-                    <p class="mt-6 text-center text-xs text-slate-500">
-                        <a href="/" class="hover:text-slate-300 transition-colors">← Back to homepage</a>
-                    </p>
-                </div>
+                @endif
             </div>
 
         </div>
