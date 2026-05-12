@@ -1,3 +1,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply antialiased;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-500
+               text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30
+               transition-all duration-200 hover:scale-105 hover:shadow-blue-500/40
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center px-6 py-3
+               text-slate-600 hover:text-slate-900 font-semibold rounded-xl
+               border border-slate-200 hover:border-slate-300 hover:bg-slate-50
+               transition-all duration-200;
+    }
+
+    .card {
+        @apply bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md
+               transition-shadow duration-200;
+    }
+}
+
+@layer utilities {
+    .font-nunito {
+        font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    /* Landing page hero background grid */
+    .bg-grid {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M0 0h60v60H0z'/%3E%3Cpath d='M60 0H0v60h60V0zM1 1h58v58H1V1z' fill='rgba(255,255,255,0.03)'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Smooth scroll offset for sticky nav */
+    .scroll-mt-nav {
+        scroll-margin-top: 4.5rem;
+    }
+
+    /* Subtle text shimmer used on feature section headers */
+    .text-shimmer {
+        background: linear-gradient(90deg, theme(colors.slate.900) 0%, theme(colors.blue.700) 50%, theme(colors.slate.900) 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s linear infinite;
+    }
+
+    @keyframes shimmer {
+        to { background-position: 200% center; }
+    }
+
+    /* Prose-level readable line length */
+    .max-w-prose-sm {
+        max-width: 52ch;
+    }
+}
