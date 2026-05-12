@@ -4,15 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\CashflowEntryResource\Pages;
-use App\Filament\Resources\CashflowEntryResource\RelationManagers;
 use App\Models\CashflowEntry;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CashflowEntryResource extends Resource
 {
@@ -30,9 +27,17 @@ class CashflowEntryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('entry_type')
-                    ->required(),
+                Forms\Components\Select::make('entry_type')
+                    ->label(__('Entry type'))
+                    ->options([
+                        'income' => __('Income'),
+                        'expense' => __('Expense'),
+                    ])
+                    ->required()
+                    ->native(false),
                 Forms\Components\TextInput::make('category')
+                    ->label(__('Category'))
+                    ->helperText(__('e.g. Tax, Sales, Company registration — free text'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Textarea::make('description')
@@ -40,8 +45,17 @@ class CashflowEntryResource extends Resource
                 Forms\Components\TextInput::make('amount')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('payment_method')
-                    ->required(),
+                Forms\Components\Select::make('payment_method')
+                    ->label(__('Payment method'))
+                    ->options([
+                        'cash' => __('Cash'),
+                        'ecocash' => __('EcoCash'),
+                        'zipit' => __('ZIPIT'),
+                        'bank_transfer' => __('Bank transfer'),
+                        'other' => __('Other'),
+                    ])
+                    ->required()
+                    ->native(false),
                 Forms\Components\DatePicker::make('entry_date')
                     ->required(),
                 Forms\Components\TextInput::make('reference')
@@ -59,13 +73,32 @@ class CashflowEntryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('entry_type'),
+                Tables\Columns\TextColumn::make('entry_type')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'income' => __('Income'),
+                        'expense' => __('Expense'),
+                        default => $state,
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'income' => 'success',
+                        'expense' => 'danger',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('category')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('payment_method'),
+                Tables\Columns\TextColumn::make('payment_method')
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'cash' => __('Cash'),
+                        'ecocash' => __('EcoCash'),
+                        'zipit' => __('ZIPIT'),
+                        'bank_transfer' => __('Bank transfer'),
+                        'other' => __('Other'),
+                        default => $state,
+                    }),
                 Tables\Columns\TextColumn::make('entry_date')
                     ->date()
                     ->sortable(),
