@@ -9,6 +9,8 @@ class Login extends BaseLogin
 {
     public function mount(): void
     {
+        DemoUser::ensureSeededForLogin();
+
         parent::mount();
 
         $this->form->fill([
