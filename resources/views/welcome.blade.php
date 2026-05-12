@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BizTrack — Manage. Track. Grow.</title>
+    <title>DealFlow — Manage. Track. Grow.</title>
     <meta name="description" content="The all-in-one business management platform for freelancers and small businesses. Track clients, close deals, send invoices, and grow revenue.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +32,7 @@
                         <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
                     </svg>
                 </div>
-                <span class="text-xl font-black tracking-tight" :class="scrolled ? 'text-slate-900' : 'text-white'">BizTrack</span>
+                <span class="text-xl font-black tracking-tight" :class="scrolled ? 'text-slate-900' : 'text-white'">DealFlow</span>
             </a>
 
             {{-- Desktop nav --}}
@@ -167,7 +167,7 @@
                             <div class="w-44 bg-white border-r border-slate-100 flex flex-col shrink-0">
                                 <div class="flex items-center gap-2 p-3 border-b border-slate-100">
                                     <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700"></div>
-                                    <span class="text-xs font-black text-slate-900">BizTrack</span>
+                                    <span class="text-xs font-black text-slate-900">DealFlow</span>
                                 </div>
                                 <nav class="p-2 flex flex-col gap-0.5 flex-1">
                                     <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold">
@@ -474,7 +474,7 @@
                     <span class="text-5xl font-black text-slate-900">$0</span>
                     <span class="text-slate-400">/month</span>
                 </div>
-                <p class="mt-3 text-sm text-slate-500">For getting started and exploring what BizTrack can do.</p>
+                <p class="mt-3 text-sm text-slate-500">For getting started and exploring what DealFlow can do.</p>
 
                 <a href="/register"
                    class="mt-7 block w-full text-center py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-slate-300 hover:bg-slate-50 transition-all duration-200">
@@ -542,7 +542,7 @@
             Ready to take control of your business?
         </h2>
         <p class="mt-5 text-lg text-blue-100">
-            Join hundreds of businesses already using BizTrack to close more deals, get paid faster, and grow with confidence.
+            Join hundreds of businesses already using DealFlow to close more deals, get paid faster, and grow with confidence.
         </p>
         <div class="mt-10 flex flex-col sm:flex-row justify-center gap-3">
             <a href="/register"
@@ -575,7 +575,7 @@
                             <path fill-rule="evenodd" d="M2 9.5A.5.5 0 012.5 9h15a.5.5 0 010 1h-15A.5.5 0 012 9.5zm0 3A.5.5 0 012.5 12h15a.5.5 0 010 1h-15A.5.5 0 012 12zm0 3A.5.5 0 012.5 15h10a.5.5 0 010 1h-10A.5.5 0 012 15z" clip-rule="evenodd"/>
                         </svg>
                     </div>
-                    <span class="text-lg font-black text-white">BizTrack</span>
+                    <span class="text-lg font-black text-white">DealFlow</span>
                 </div>
                 <p class="text-sm leading-relaxed max-w-xs">
                     The all-in-one business management platform built for modern freelancers and SMEs.
@@ -603,7 +603,7 @@
         </div>
 
         <div class="mt-10 pt-8 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p class="text-xs text-slate-600">&copy; {{ date('Y') }} BizTrack. All rights reserved.</p>
+            <p class="text-xs text-slate-600">&copy; {{ date('Y') }} DealFlow. All rights reserved.</p>
             <p class="text-xs text-slate-600">Built by <a href="https://softurf.co.zw" class="hover:text-white transition-colors">Softurf Solutions</a></p>
         </div>
     </div>

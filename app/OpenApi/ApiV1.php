@@ -7,8 +7,8 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Info(
  *   version="1.0.0",
- *   title="BizTrack API",
- *   description="BizTrack REST API (Mobile) — v1"
+ *   title="DealFlow API",
+ *   description="DealFlow REST API (Mobile) — v1"
  * )
  *
  * @OA\Server(

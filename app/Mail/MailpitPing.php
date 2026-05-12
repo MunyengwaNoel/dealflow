@@ -13,14 +13,14 @@ class MailpitPing extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $note = 'BizTrack Mailpit test.')
+    public function __construct(public string $note = 'DealFlow Mailpit test.')
     {
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'BizTrack Mailpit ping',
+            subject: 'DealFlow Mailpit ping',
         );
     }
 

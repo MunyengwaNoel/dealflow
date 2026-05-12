@@ -1,6 +1,6 @@
-# BizTrack
+# DealFlow
 
-BizTrack is a SaaS consultancy management platform for Zimbabwean SME consultancies.
+DealFlow is a SaaS consultancy management platform for Zimbabwean SME consultancies.
 
 ## Stack
 
@@ -37,7 +37,7 @@ php artisan serve
 ## Demo account (planned seed)
 
 ```
-demo@biztrack.app / password
+demo@DealFlow.app / password
 ```
 
 # dealflow

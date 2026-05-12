@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: BizTrack API
+  title: DealFlow API
   version: 1.0.0
-  description: BizTrack REST API (Mobile) — v1
+  description: DealFlow REST API (Mobile) — v1
 servers:
   - url: /api/v1
 security:
@@ -72,7 +72,7 @@ paths:
               type: object
               required: [email, password]
               properties:
-                email: { type: string, example: demo@biztrack.app }
+                email: { type: string, example: demo@DealFlow.app }
                 password: { type: string, example: password }
                 device_name: { type: string, example: mobile }
       responses:
