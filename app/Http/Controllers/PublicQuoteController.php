@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DealStage;
 use App\Models\Quote;
 use App\Models\QuoteAnalytic;
+use App\Services\DealScoringService;
 use App\Tenancy\TenantScope;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,11 +36,13 @@ class PublicQuoteController extends Controller
         ]);
 
         if ($quote->deal_id) {
-            $quote->deal?->forceFill([
+            $deal = $quote->deal;
+            $deal?->forceFill([
                 'quote_was_opened' => true,
-                'engagement_points' => min(10, (int) ($quote->deal->engagement_points ?? 0) + 2),
+                'quote_opened_at' => $deal->quote_opened_at ?? now(),
+                'engagement_points' => min(10, (int) ($deal->engagement_points ?? 0) + 2),
             ])->saveQuietly();
-            app(\App\Services\DealScoringService::class)->applyToDeal($quote->deal->fresh());
+            app(DealScoringService::class)->applyToDeal($deal->fresh());
         }
 
         return view('quote-portal.show', ['quote' => $quote]);
@@ -67,10 +71,11 @@ class PublicQuoteController extends Controller
 
         if ($quote->deal_id) {
             $quote->deal?->forceFill([
-                'stage' => \App\Enums\DealStage::Won,
+                'stage' => DealStage::Won,
                 'actual_close_date' => now()->toDateString(),
+                'quote_accepted_at' => now(),
             ])->saveQuietly();
-            app(\App\Services\DealScoringService::class)->applyToDeal($quote->deal->fresh());
+            app(DealScoringService::class)->applyToDeal($quote->deal->fresh());
         }
 
         return redirect()->route('quote.portal', ['token' => $token])
@@ -101,7 +106,7 @@ class PublicQuoteController extends Controller
 
         if ($quote->deal_id) {
             $quote->deal?->forceFill([
-                'stage' => \App\Enums\DealStage::Lost,
+                'stage' => DealStage::Lost,
                 'lost_reason' => $data['decline_reason'] ?? 'Quote declined',
                 'actual_close_date' => now()->toDateString(),
             ])->saveQuietly();
@@ -128,7 +133,7 @@ class PublicQuoteController extends Controller
                 'demo_was_viewed' => true,
                 'engagement_points' => min(10, (int) ($quote->deal->engagement_points ?? 0) + 2),
             ])->saveQuietly();
-            app(\App\Services\DealScoringService::class)->applyToDeal($quote->deal->fresh());
+            app(DealScoringService::class)->applyToDeal($quote->deal->fresh());
         }
 
         return response()->json(['ok' => true]);

@@ -54,6 +54,6 @@ class RegistrationTest extends TestCase
 
         $user = User::query()->where('phone', '+263772000001')->first();
         $this->assertNotNull($user);
-        $this->assertStringEndsWith('@signup.biztrack.local', (string) $user->email);
+        $this->assertStringEndsWith('@signup.dealflow.local', (string) $user->email);
     }
 }

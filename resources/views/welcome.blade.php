@@ -157,7 +157,7 @@
                                 <span class="w-3 h-3 rounded-full bg-emerald-500/70"></span>
                             </div>
                             <div class="flex-1 mx-4">
-                                <div class="bg-slate-700/50 rounded-md px-3 py-1 text-xs text-slate-400 text-center">biztrack.app/admin</div>
+                                <div class="bg-slate-700/50 rounded-md px-3 py-1 text-xs text-slate-400 text-center">dealflow.app/admin</div>
                             </div>
                         </div>
 

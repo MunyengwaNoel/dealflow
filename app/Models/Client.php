@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\BelongsToTenant;
 
 class Client extends Model
 {
@@ -66,5 +66,10 @@ class Client extends Model
     public function deals()
     {
         return $this->hasMany(Deal::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

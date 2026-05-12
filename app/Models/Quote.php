@@ -13,6 +13,7 @@ class Quote extends Model
     protected $fillable = [
         'tenant_id',
         'client_id',
+        'order_id',
         'deal_id',
         'service_template_id',
         'quote_number',
@@ -61,6 +62,11 @@ class Quote extends Model
     public function deal()
     {
         return $this->belongsTo(Deal::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
     public function serviceTemplate()

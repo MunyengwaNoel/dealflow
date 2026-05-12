@@ -5,9 +5,9 @@ namespace App\Console\Commands;
 use App\Models\Invoice;
 use Illuminate\Console\Command;
 
-class BiztrackUpdateOverdueInvoices extends Command
+class DealFlowUpdateOverdueInvoices extends Command
 {
-    protected $signature = 'biztrack:invoices:mark-overdue';
+    protected $signature = 'dealflow:invoices:mark-overdue';
 
     protected $description = 'Mark unpaid invoices as overdue when past due date';
 

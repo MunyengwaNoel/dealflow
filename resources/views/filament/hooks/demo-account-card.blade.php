@@ -9,7 +9,7 @@
     <div class="flex flex-col gap-1.5 text-sm">
         <div class="flex items-center justify-between">
             <span class="text-slate-500 text-xs">Email</span>
-            <span class="font-semibold text-blue-700 text-xs">demo@biztrack.app</span>
+            <span class="font-semibold text-blue-700 text-xs">demo@dealflow.app</span>
         </div>
         <div class="flex items-center justify-between">
             <span class="text-slate-500 text-xs">Password</span>

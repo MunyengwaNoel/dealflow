@@ -32,11 +32,11 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->brandName(config('app.name', 'DealFlow Pro'))
-            ->brandLogo(asset('images/biztrack-logo.svg'))
+            ->brandLogo(asset('images/dealflow-logo.svg'))
             ->brandLogoHeight('2rem')
             ->font('Nunito', provider: GoogleFontProvider::class)
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->favicon(asset('images/biztrack-logo.svg'))
+            ->favicon(asset('images/dealflow-logo.svg'))
 
             // Colour palette: rich but purposeful
             ->colors([

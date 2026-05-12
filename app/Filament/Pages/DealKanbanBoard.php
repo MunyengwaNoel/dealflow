@@ -4,11 +4,13 @@ namespace App\Filament\Pages;
 
 use App\Enums\DealStage;
 use App\Models\Deal;
-use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
+use Mokhosh\FilamentKanban\Pages\KanbanBoard;
 
-class DealKanbanBoard extends \Mokhosh\FilamentKanban\Pages\KanbanBoard
+class DealKanbanBoard extends KanbanBoard
 {
+    protected static string $recordView = 'filament.kanban.deal-record';
+
     protected static ?string $navigationIcon = 'heroicon-o-view-columns';
 
     protected static string $model = Deal::class;

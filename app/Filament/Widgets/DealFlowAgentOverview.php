@@ -2,15 +2,18 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\DealStage;
+use App\Enums\OrderStatus;
 use App\Models\Client;
 use App\Models\Deal;
 use App\Models\Document;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\Quote;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class BiztrackOverview extends StatsOverviewWidget
+class DealFlowAgentOverview extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
 
@@ -18,9 +21,6 @@ class BiztrackOverview extends StatsOverviewWidget
 
     protected function getTenant()
     {
-        // Try the middleware-bound tenant first; fall back to the
-        // authenticated user's own relationship (needed for Livewire poll
-        // requests that bypass the Filament panel middleware stack).
         return app('tenant') ?? auth()->user()?->tenant;
     }
 
@@ -33,10 +33,10 @@ class BiztrackOverview extends StatsOverviewWidget
         }
 
         $totalClients = Client::query()->count();
-        $prevClients  = Client::query()
+        $prevClients = Client::query()
             ->where('created_at', '<', now()->subDays(30))
             ->count();
-        $clientTrend  = $prevClients > 0
+        $clientTrend = $prevClients > 0
             ? round((($totalClients - $prevClients) / $prevClients) * 100, 1)
             : 0;
 
@@ -56,8 +56,51 @@ class BiztrackOverview extends StatsOverviewWidget
             ->where('amount_due', '>', 0)
             ->sum('amount_due');
 
+        $weekRevenue = Invoice::query()
+            ->where('status', 'paid')
+            ->where('paid_date', '>=', now()->startOfWeek()->toDateString())
+            ->sum('amount_paid');
+
+        $hotDeals = Deal::query()
+            ->where('stage', DealStage::Quoted->value)
+            ->where(function ($q) {
+                $q->where('quote_was_opened', false)
+                    ->orWhere(function ($q2) {
+                        $q2->where('quote_was_opened', true)
+                            ->where('updated_at', '<', now()->subDays(5));
+                    });
+            })
+            ->count();
+
+        $newQuotes = Quote::query()
+            ->whereIn('status', ['draft', 'sent'])
+            ->where('created_at', '>=', now()->subDays(7))
+            ->count();
+
+        $draftOrders = Order::query()->where('status', OrderStatus::Draft)->count();
+
         $stats = [
-            Stat::make('Total Clients', number_format($totalClients))
+            Stat::make('Hot pipeline', number_format($hotDeals))
+                ->description('Quoted deals needing attention')
+                ->descriptionIcon('heroicon-m-fire')
+                ->color($hotDeals > 0 ? 'danger' : 'success'),
+
+            Stat::make('Revenue this week', '$'.number_format((float) $weekRevenue, 0))
+                ->description('Recorded payments')
+                ->descriptionIcon('heroicon-m-banknotes')
+                ->color('primary'),
+
+            Stat::make('New quotes (7d)', number_format($newQuotes))
+                ->description('Draft + sent')
+                ->descriptionIcon('heroicon-m-document-text')
+                ->color('info'),
+
+            Stat::make('Draft orders', number_format($draftOrders))
+                ->description('Wizard in progress')
+                ->descriptionIcon('heroicon-m-clipboard-document-list')
+                ->color('warning'),
+
+            Stat::make('Total clients', number_format($totalClients))
                 ->description($clientTrend >= 0
                     ? "+{$clientTrend}% from last 30 days"
                     : "{$clientTrend}% from last 30 days")
@@ -73,17 +116,15 @@ class BiztrackOverview extends StatsOverviewWidget
                     ->pluck('count')
                     ->toArray()),
 
-            Stat::make('Outstanding Invoices', number_format($outstanding))
-                ->description('$' . number_format($outstandingAmount, 2) . ' due')
+            Stat::make('Outstanding invoices', number_format($outstanding))
+                ->description('$'.number_format((float) $outstandingAmount, 2).' due')
                 ->descriptionIcon($outstanding > 0
                     ? 'heroicon-m-exclamation-circle'
                     : 'heroicon-m-check-circle')
                 ->color($outstanding > 5 ? 'danger' : ($outstanding > 0 ? 'warning' : 'success')),
 
-            Stat::make('Docs Expiring (30d)', number_format($expiringDocs))
-                ->description($expiringDocs > 0
-                    ? 'Action required'
-                    : 'All documents current')
+            Stat::make('Docs expiring (30d)', number_format($expiringDocs))
+                ->description($expiringDocs > 0 ? 'Action required' : 'All documents current')
                 ->descriptionIcon($expiringDocs > 0
                     ? 'heroicon-m-document-minus'
                     : 'heroicon-m-document-check')
@@ -96,20 +137,20 @@ class BiztrackOverview extends StatsOverviewWidget
                 ->count();
 
             $openDeals = Deal::query()
-                ->whereNotIn('stage', ['won', 'lost'])
+                ->whereNotIn('stage', [DealStage::Won->value, DealStage::Lost->value])
                 ->count();
 
             $wonDealsThisMonth = Deal::query()
-                ->where('stage', 'won')
+                ->where('stage', DealStage::Won->value)
                 ->whereMonth('updated_at', now()->month)
                 ->count();
 
-            $stats[] = Stat::make('Open Quotes', number_format($openQuotes))
+            $stats[] = Stat::make('Open quotes', number_format($openQuotes))
                 ->description('Awaiting response')
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('info');
 
-            $stats[] = Stat::make('Active Deals', number_format($openDeals))
+            $stats[] = Stat::make('Active deals', number_format($openDeals))
                 ->description("{$wonDealsThisMonth} won this month")
                 ->descriptionIcon('heroicon-m-trophy')
                 ->color('primary');

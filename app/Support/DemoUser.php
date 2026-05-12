@@ -8,7 +8,7 @@ use Throwable;
 
 final class DemoUser
 {
-    public const EMAIL = 'demo@biztrack.app';
+    public const EMAIL = 'demo@dealflow.app';
 
     /**
      * Ensure the demo owner exists so prepopulated admin login works after migrate without a manual seed.

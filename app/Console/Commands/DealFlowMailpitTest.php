@@ -6,9 +6,9 @@ use App\Mail\MailpitPing;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
-class BiztrackMailpitTest extends Command
+class DealFlowMailpitTest extends Command
 {
-    protected $signature = 'biztrack:mailpit-test
+    protected $signature = 'dealflow:mailpit-test
                             {--sync : Send immediately instead of pushing to the queue}
                             {--to= : Recipient email (defaults to MAILPIT_TEST_TO or mailpit@localhost)}';
 

@@ -17,6 +17,7 @@ class Deal extends Model
     protected $fillable = [
         'tenant_id',
         'client_id',
+        'order_id',
         'deal_number',
         'service_template_id',
         'title',
@@ -44,6 +45,8 @@ class Deal extends Model
     protected $casts = [
         'expected_close_date' => 'date',
         'actual_close_date' => 'date',
+        'quote_opened_at' => 'datetime',
+        'quote_accepted_at' => 'datetime',
         'value' => 'decimal:2',
         'cost_total' => 'decimal:2',
         'profit' => 'decimal:2',
@@ -70,6 +73,11 @@ class Deal extends Model
             $deal->loadMissing('client');
             app(DealScoringService::class)->applyToDeal($deal);
         });
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
     public function client()

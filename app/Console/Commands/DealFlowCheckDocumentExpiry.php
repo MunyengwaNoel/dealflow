@@ -7,9 +7,9 @@ use App\Models\User;
 use App\Notifications\DocumentExpiringSoon;
 use Illuminate\Console\Command;
 
-class BiztrackCheckDocumentExpiry extends Command
+class DealFlowCheckDocumentExpiry extends Command
 {
-    protected $signature = 'biztrack:documents:check-expiry';
+    protected $signature = 'dealflow:documents:check-expiry';
 
     protected $description = 'Notify tenant users about documents approaching expiry';
 

@@ -1,0 +1,315 @@
+<div class="fi-section rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+    <div class="grid grid-cols-1 gap-6 p-4 lg:grid-cols-12">
+        <div class="lg:col-span-8 space-y-6">
+            {{-- Progress --}}
+            <div>
+                <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                        Step {{ $stepIndex + 1 }} of {{ count($stepKeys) }}
+                    </span>
+                    <span>{{ $clientName ?: 'Select a customer' }}</span>
+                </div>
+                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div class="h-full rounded-full bg-primary-600 transition-all"
+                         style="width: {{ count($stepKeys) ? (($stepIndex + 1) / count($stepKeys)) * 100 : 0 }}%"></div>
+                </div>
+                <nav class="mt-3 flex flex-wrap gap-2 text-xs">
+                    @foreach($stepKeys as $i => $key)
+                        <button type="button"
+                                wire:click="goStep({{ $i }})"
+                                class="rounded-full px-2 py-1 {{ $i === $stepIndex ? 'bg-primary-600 text-white' : ($i < $stepIndex ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30' : 'bg-gray-100 text-gray-600 dark:bg-gray-800') }}">
+                            {{ str($key)->replace('_', ' ')->title() }}
+                        </button>
+                    @endforeach
+                </nav>
+            </div>
+
+            @php $k = $this->currentKey(); @endphp
+
+            @if($k === 'customer')
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-500">💡 Start typing company name or contact</p>
+                    <div class="flex gap-2">
+                        <input type="search" wire:model.live.debounce.300ms="clientSearch"
+                               class="fi-input block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600 dark:border-gray-700 dark:bg-gray-900"
+                               placeholder="Search customer…" autocomplete="off"/>
+                    </div>
+                    @if(count($clientResults))
+                        <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200 dark:divide-gray-800 dark:border-gray-700">
+                            @foreach($clientResults as $c)
+                                <li>
+                                    <button type="button" wire:click="selectClient({{ $c['id'] }})"
+                                            class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800">
+                                        <span class="font-medium text-gray-900 dark:text-white">{{ $c['name'] }}</span>
+                                        <span class="text-xs text-gray-500">{{ $c['orders_count'] }} quotes</span>
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Recent</p>
+                        <div class="mt-2 flex flex-wrap gap-2">
+                            @foreach($recentClients as $rc)
+                                <button type="button" wire:click="selectClient({{ $rc->id }})"
+                                        class="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-800 hover:border-primary-500 hover:text-primary-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200">
+                                    {{ $rc->name }}
+                                    <span class="ml-1 rounded-full bg-white px-1.5 text-[10px] dark:bg-gray-900">{{ $rc->quotes_count }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if($k === 'services')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">What does {{ $clientName }} need?</h2>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        @foreach([
+                            'website' => ['🌐','Website development',150],
+                            'email' => ['📧','Email hosting',24],
+                            'company_reg' => ['🏢','Company registration',120],
+                            'domain' => ['🌍','Domain registration',9],
+                            'tax_clearance' => ['💰','Tax clearance',50],
+                            'business_plan' => ['📑','Business plan',200],
+                        ] as $svc => $meta)
+                            <button type="button" wire:click="toggleService('{{ $svc }}')"
+                                    class="flex flex-col rounded-xl border p-4 text-left transition
+                                        {{ in_array($svc, $selectedServices, true) ? 'border-primary-600 ring-2 ring-primary-500/30 bg-primary-50/40 dark:bg-primary-950/20' : 'border-gray-200 hover:border-primary-400 dark:border-gray-700' }}">
+                                <span class="text-2xl">{{ $meta[0] }}</span>
+                                <span class="mt-2 font-semibold text-gray-900 dark:text-white">{{ $meta[1] }}</span>
+                                <span class="text-sm text-gray-500">from ${{ $meta[2] }}</span>
+                                <span class="mt-3 text-xs font-bold text-primary-700">{{ in_array($svc, $selectedServices, true) ? '✓ Selected' : 'Select' }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                    <p class="text-sm text-gray-600">Estimated total: <strong>${{ number_format($pricing['subtotal'], 2) }}</strong></p>
+                </div>
+            @endif
+
+            @if($k === 'domain')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">🌍 Domain registration</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <input wire:model="domainPrefix" class="fi-input rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900" placeholder="yourbrand"/>
+                        <select wire:model="domainExtension" class="fi-input rounded-lg border-gray-300 dark:bg-gray-700 dark:bg-gray-900">
+                            <option value=".co.zw">.co.zw</option>
+                            <option value=".com">.com</option>
+                            <option value=".net">.net</option>
+                            <option value=".org">.org</option>
+                            <option value=".africa">.africa</option>
+                        </select>
+                        <button type="button" wire:click="checkDomain" wire:loading.attr="disabled"
+                                class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500">
+                            Check availability
+                        </button>
+                    </div>
+                    @if($domainAvailabilityChecked)
+                        <p class="{{ $domainAvailable ? 'text-emerald-600' : 'text-red-600' }} font-semibold">
+                            {{ $domainAvailable ? '✅ Available' : '❌ Taken' }}
+                        </p>
+                        @if(!$domainAvailable && count($domainSuggestions))
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($domainSuggestions as $s)
+                                    <button type="button" wire:click="pickDomainSuggestion(@js($s))" class="text-xs underline">{{ $s }}</button>
+                                @endforeach
+                            </div>
+                        @endif
+                    @endif
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        @foreach([1 => '1 year', 2 => '2 years', 3 => '3 years ✨'] as $y => $label)
+                            <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+                                <input type="radio" wire:model="domainYears" value="{{ $y }}" class="text-primary-600"/>
+                                <span>{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <label class="inline-flex items-center gap-2 text-sm">
+                        <input type="checkbox" wire:model="domainPrivacy" class="rounded border-gray-300 text-primary-600"/>
+                        Domain privacy (+$5/yr)
+                    </label>
+                </div>
+            @endif
+
+            @if($k === 'website')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">🌐 Website development</h2>
+                    <input wire:model.live="businessType" class="fi-input w-full rounded-lg border-gray-300 dark:bg-gray-900" placeholder="Business type (e.g. perfume sales)"/>
+                    <div class="grid gap-3 md:grid-cols-3">
+                        @foreach([
+                            'basic' => ['Basic',150,'5 pages · contact form'],
+                            'business' => ['Business',350,'10 pages · blog · gallery'],
+                            'ecommerce' => ['E-commerce',800,'Cart · payments'],
+                        ] as $id => $row)
+                            <button type="button" wire:click="$set('websitePackage','{{ $id }}')"
+                                    class="rounded-xl border p-4 text-left {{ $websitePackage === $id ? 'border-primary-600 ring-2 ring-primary-500/30' : 'border-gray-200 dark:border-gray-700' }}">
+                                <div class="font-bold">{{ $row[0] }}</div>
+                                <div class="text-primary-700 font-semibold">${{ $row[1] }}</div>
+                                <p class="mt-2 text-xs text-gray-500">{{ $row[2] }}</p>
+                            </button>
+                        @endforeach
+                    </div>
+                    @if(str_contains(strtolower($businessType), 'perfume'))
+                        <p class="text-sm text-amber-800 bg-amber-50 rounded-lg p-2">💡 For perfume sales, we recommend Business or E-commerce.</p>
+                    @endif
+                    <div class="space-y-2 text-sm">
+                        @foreach([
+                            'live_chat' => 'Live chat (+$50)',
+                            'custom_design' => 'Custom design (+$150)',
+                            'booking' => 'Booking system (+$100)',
+                            'maintenance' => 'Monthly maintenance ($360/yr)',
+                            'content_write' => 'We write content (+$200)',
+                        ] as $aid => $alabel)
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" wire:click="toggleWebsiteAddon('{{ $aid }}')" @checked(in_array($aid, $websiteAddons, true))/>
+                                {{ $alabel }}
+                            </label>
+                        @endforeach
+                    </div>
+                    @if(in_array('website', $selectedServices, true))
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" wire:model="websiteHostingAuto"/>
+                            Auto-include web hosting ($30/yr)
+                        </label>
+                    @endif
+                </div>
+            @endif
+
+            @if($k === 'email')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">📧 Email hosting</h2>
+                    <p class="text-sm text-gray-500">Professional addresses for @{{ rtrim($domainPrefix,'.') }}{{ $domainExtension }}</p>
+                    <div class="grid gap-3 md:grid-cols-3">
+                        @foreach(['starter' => ['Starter',10],'business' => ['Business',24],'enterprise' => ['Enterprise',50]] as $id => $row)
+                            <button type="button" wire:click="$set('emailPackage','{{ $id }}')"
+                                    class="rounded-xl border p-4 text-left {{ $emailPackage === $id ? 'border-primary-600 ring-2 ring-primary-500/30' : 'border-gray-200 dark:border-gray-700' }}">
+                                <div class="font-bold">{{ $row[0] }}</div>
+                                <div class="text-primary-700 font-semibold">${{ $row[1] }}/yr</div>
+                            </button>
+                        @endforeach
+                    </div>
+                    <div class="space-y-2">
+                        @foreach($emailAddresses as $i => $row)
+                            <div class="flex gap-2">
+                                <input wire:model="emailAddresses.{{ $i }}.prefix" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900" placeholder="prefix"/>
+                                <span class="self-center text-sm text-gray-500">@{{ rtrim($domainPrefix,'.') }}{{ $domainExtension }}</span>
+                                <input wire:model="emailAddresses.{{ $i }}.purpose" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900 w-40" placeholder="purpose"/>
+                            </div>
+                        @endforeach
+                        <button type="button" wire:click="addEmailRow" class="text-sm text-primary-700 font-semibold">+ Add row</button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        @foreach(['admin','accounts','orders','marketing'] as $chip)
+                            <button type="button" class="rounded-full bg-gray-100 px-2 py-1 dark:bg-gray-800" wire:click="$set('emailAddresses.' . (count($emailAddresses)-1) . '.prefix', '{{ $chip }}')">{{ $chip }}@</button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if($k === 'company_reg')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">🏢 Company registration</h2>
+                    <div class="space-y-2">
+                        @foreach(['pvt_ltd' => 'Private (Pvt Ltd) — $120','pbc' => 'PBC — $100','trust' => 'Trust — $150','ngo' => 'NGO — $100'] as $tid => $lab)
+                            <label class="flex items-center gap-2">
+                                <input type="radio" wire:model="companyType" value="{{ $tid }}"/> {{ $lab }}
+                            </label>
+                        @endforeach
+                    </div>
+                    <p class="text-sm font-semibold">Name options</p>
+                    @foreach([0,1,2] as $ni)
+                        <input wire:model="companyNameOptions.{{ $ni }}" class="fi-input w-full rounded-lg border-gray-300 dark:bg-gray-900" placeholder="Suggested name {{ $ni+1 }}"/>
+                    @endforeach
+                    <p class="text-sm font-semibold">Directors</p>
+                    @foreach($directors as $di => $dir)
+                        <div class="grid gap-2 rounded-lg border border-gray-200 p-3 dark:border-gray-700 md:grid-cols-2">
+                            <input wire:model="directors.{{ $di }}.name" placeholder="Full name" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900"/>
+                            <input wire:model="directors.{{ $di }}.id_number" placeholder="ID 00-000000-X-00" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900"/>
+                            <input wire:model="directors.{{ $di }}.address" placeholder="Address" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900 md:col-span-2"/>
+                            <input wire:model="directors.{{ $di }}.shares" placeholder="Share %" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900"/>
+                            <input wire:model="directors.{{ $di }}.nationality" placeholder="Nationality" class="fi-input rounded-lg border-gray-300 dark:bg-gray-900"/>
+                        </div>
+                    @endforeach
+                    <button type="button" wire:click="addDirector" class="text-sm font-semibold text-primary-700">+ Add director</button>
+                    <div class="space-y-2 text-sm">
+                        @foreach(['tax_clearance' => 'Tax clearance (+$50)','stamp' => 'Rubber stamp (+$30)','nssa' => 'NSSA (+$50)','bank_letter' => 'Bank letter (+$15)'] as $cid => $clab)
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" wire:click="toggleCompanyAddon('{{ $cid }}')" @checked(in_array($cid, $companyAddons, true))/>
+                                {{ $clab }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if($k === 'tax_clearance')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">💰 Tax clearance</h2>
+                    <label class="flex items-center gap-2"><input type="radio" wire:model.live="taxUrgent" :value="0"/> Standard — $50</label>
+                    <label class="flex items-center gap-2"><input type="radio" wire:model.live="taxUrgent" :value="1"/> Urgent — $80</label>
+                    <p class="text-sm text-gray-500">Company details pre-filled from the customer record where available.</p>
+                    <label class="flex items-center gap-2"><input type="radio" wire:model="taxFrequency" value="once"/> One-time</label>
+                    <label class="flex items-center gap-2"><input type="radio" wire:model="taxFrequency" value="quarterly"/> Quarterly retainer</label>
+                </div>
+            @endif
+
+            @if($k === 'business_plan')
+                <div class="space-y-2">
+                    <h2 class="text-lg font-bold">📑 Business plan</h2>
+                    <p class="text-sm text-gray-600">Includes market overview, financial projections template, and investor-ready summary.</p>
+                </div>
+            @endif
+
+            @if($k === 'review')
+                <div class="space-y-4">
+                    <h2 class="text-lg font-bold">📋 Review for {{ $clientName }}</h2>
+                    <div class="rounded-lg border border-gray-200 p-4 text-sm dark:border-gray-700 space-y-1">
+                        <div class="flex justify-between"><span>Subtotal</span><strong>${{ number_format($pricing['subtotal'],2) }}</strong></div>
+                        <div class="flex justify-between text-gray-500"><span>Your cost (internal)</span><span>${{ number_format($pricing['total_cost'],2) }}</span></div>
+                        <div class="flex justify-between text-emerald-700"><span>Profit</span><strong>${{ number_format($pricing['profit'],2) }} ({{ $pricing['margin_percent'] ?? '—' }}%)</strong></div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2"><input type="radio" wire:model="paymentTerms" value="deposit"/> 50% deposit / 50% on delivery</label>
+                        <label class="flex items-center gap-2"><input type="radio" wire:model="paymentTerms" value="full"/> Full upfront (5% courtesy discount applied manually)</label>
+                        <label class="flex items-center gap-2"><input type="radio" wire:model="paymentTerms" value="installments"/> Three installments</label>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <label class="flex items-center gap-2"><input type="checkbox" wire:model="sendEmail"/> Email PDF + portal link</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" wire:model="sendWhatsapp"/> WhatsApp link (logged)</label>
+                        <label class="flex items-center gap-2"><input type="checkbox" wire:model="sendSms"/> SMS (optional)</label>
+                    </div>
+                    <textarea wire:model="personalMessage" rows="3" class="fi-input w-full rounded-lg border-gray-300 dark:bg-gray-900" placeholder="Personal message to the client…"></textarea>
+                </div>
+            @endif
+
+            <div class="flex flex-wrap gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
+                <button type="button" wire:click="back" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold dark:border-gray-600">← Back</button>
+                <button type="button" wire:click="saveDraft" class="rounded-lg border border-dashed border-gray-400 px-4 py-2 text-sm font-semibold">Save draft</button>
+                @if($k !== 'review')
+                    <button type="button" wire:click="next" class="ml-auto rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500">Continue →</button>
+                @else
+                    <button type="button" wire:click="sendQuote" class="ml-auto rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500">Generate & send quote</button>
+                @endif
+            </div>
+        </div>
+
+        {{-- Sidebar --}}
+        <aside class="lg:col-span-4 space-y-3 rounded-xl border border-gray-200 bg-gray-50/80 p-4 text-sm dark:border-gray-700 dark:bg-gray-900/40">
+            <h3 class="font-bold text-gray-900 dark:text-white">Order summary</h3>
+            <ul class="space-y-2">
+                @foreach($pricing['lines'] as $line)
+                    <li class="flex justify-between gap-2">
+                        <span>{{ $line['name'] }}</span>
+                        <span class="font-mono text-xs">${{ number_format($line['line_total'],2) }}</span>
+                    </li>
+                @endforeach
+            </ul>
+            <div class="border-t border-gray-200 pt-2 dark:border-gray-700 space-y-1">
+                <div class="flex justify-between font-semibold"><span>Subtotal</span><span>${{ number_format($pricing['subtotal'],2) }}</span></div>
+                <div class="flex justify-between text-emerald-700"><span>Profit</span><span>${{ number_format($pricing['profit'],2) }} ({{ $pricing['margin_percent'] ?? '—' }}%)</span></div>
+                <div class="text-xs text-gray-500">One-time: ${{ number_format($pricing['one_time'],2) }} · Recurring/yr: ${{ number_format($pricing['recurring_annual'],2) }}</div>
+            </div>
+        </aside>
+    </div>
+</div>

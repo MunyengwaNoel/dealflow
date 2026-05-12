@@ -69,7 +69,7 @@ class DemoTenantSeeder extends Seeder
             $tenant->forceFill([
                 'name' => 'Demo Company Ltd',
                 'plan' => 'pro',
-                'email' => 'accounts@demo.biztrack.app',
+                'email' => 'accounts@demo.dealflow.app',
                 'phone' => '+263 77 000 0000',
                 'owner_id' => $owner->id,
             ])->save();
@@ -86,7 +86,7 @@ class DemoTenantSeeder extends Seeder
                 'name' => 'Demo Company Ltd',
                 'slug' => $slug,
                 'plan' => 'pro',
-                'email' => 'accounts@demo.biztrack.app',
+                'email' => 'accounts@demo.dealflow.app',
                 'phone' => '+263 77 000 0000',
                 'owner_name' => 'Demo Owner',
                 'owner_email' => DemoUser::EMAIL,

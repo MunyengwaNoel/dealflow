@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\DealStage;
 use App\Models\Deal;
 use App\Models\User;
 use App\Notifications\DealFollowUpDue;
 use Illuminate\Console\Command;
 
-class BiztrackDealFollowUpReminder extends Command
+class DealFlowDealFollowUpReminder extends Command
 {
-    protected $signature = 'biztrack:deals:follow-up-reminders';
+    protected $signature = 'dealflow:deals:follow-up-reminders';
 
     protected $description = 'Notify assignees about deals with expected close dates soon or overdue';
 
@@ -18,7 +19,7 @@ class BiztrackDealFollowUpReminder extends Command
         $n = 0;
 
         Deal::query()
-            ->whereNotIn('stage', ['won', 'lost'])
+            ->whereNotIn('stage', [DealStage::Won->value, DealStage::Lost->value])
             ->whereNotNull('expected_close_date')
             ->whereDate('expected_close_date', '<=', now()->addDays(2)->toDateString())
             ->whereNotNull('assigned_to')

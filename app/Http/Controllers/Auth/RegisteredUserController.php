@@ -64,13 +64,13 @@ class RegisteredUserController extends Controller
     {
         $digits = preg_replace('/\D+/', '', $phone) ?: Str::lower(Str::random(10));
 
-        $base = 'u'.$digits.'@signup.biztrack.local';
+        $base = 'u'.$digits.'@signup.dealflow.local';
         $candidate = $base;
         $suffix = 0;
 
         while (User::query()->where('email', $candidate)->exists()) {
             $suffix++;
-            $candidate = 'u'.$digits.'-'.$suffix.'@signup.biztrack.local';
+            $candidate = 'u'.$digits.'-'.$suffix.'@signup.dealflow.local';
         }
 
         return $candidate;
