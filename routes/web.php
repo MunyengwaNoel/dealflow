@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvoiceDocumentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicQuoteController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/documents/invoices/{invoice}/print', [InvoiceDocumentController::class, 'print'])
+        ->name('documents.invoice.print');
+    Route::get('/documents/invoices/{invoice}/pdf', [InvoiceDocumentController::class, 'pdf'])
+        ->name('documents.invoice.pdf');
+    Route::get('/documents/invoices/{invoice}/export.csv', [InvoiceDocumentController::class, 'csv'])
+        ->name('documents.invoice.csv');
+    Route::get('/documents/invoices/{invoice}/export.xlsx', [InvoiceDocumentController::class, 'xlsx'])
+        ->name('documents.invoice.xlsx');
 });
 
 require __DIR__.'/auth.php';

@@ -4,11 +4,17 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\CashflowEntryResource\Pages;
+use App\Filament\Resources\CashflowEntryResource\Widgets\CashflowTotalsOverview;
 use App\Models\CashflowEntry;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -101,8 +107,19 @@ class CashflowEntryResource extends Resource
                 Tables\Columns\TextColumn::make('category')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amount')
+                    ->label(__('Amount'))
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('income_amount')
+                    ->label(__('Income'))
+                    ->state(fn (CashflowEntry $record): float => $record->entry_type === 'income' ? (float) $record->amount : 0.0)
+                    ->numeric(decimalPlaces: 2)
+                    ->summarize(Sum::make()->label(__('Income total'))),
+                Tables\Columns\TextColumn::make('expense_amount')
+                    ->label(__('Expenses'))
+                    ->state(fn (CashflowEntry $record): float => $record->entry_type === 'expense' ? (float) $record->amount : 0.0)
+                    ->numeric(decimalPlaces: 2)
+                    ->summarize(Sum::make()->label(__('Expense total'))),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'cash' => __('Cash'),
@@ -136,9 +153,87 @@ class CashflowEntryResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('entry_date', 'desc')
             ->filters([
-                //
+                SelectFilter::make('entry_type')
+                    ->label(__('Entry type'))
+                    ->options([
+                        'income' => __('Income'),
+                        'expense' => __('Expense'),
+                    ]),
+                SelectFilter::make('payment_method')
+                    ->label(__('Payment method'))
+                    ->options([
+                        'cash' => __('Cash'),
+                        'ecocash' => __('EcoCash'),
+                        'zipit' => __('ZIPIT'),
+                        'bank_transfer' => __('Bank transfer'),
+                        'other' => __('Other'),
+                    ]),
+                SelectFilter::make('period_preset')
+                    ->label(__('Quick period'))
+                    ->options([
+                        'today' => __('Today'),
+                        'this_month' => __('This month'),
+                        'this_year' => __('This year'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+                        if (blank($value)) {
+                            return $query;
+                        }
+
+                        return match ($value) {
+                            'today' => $query->whereDate('entry_date', today()),
+                            'this_month' => $query->whereBetween('entry_date', [
+                                now()->startOfMonth()->toDateString(),
+                                now()->endOfMonth()->toDateString(),
+                            ]),
+                            'this_year' => $query->whereBetween('entry_date', [
+                                now()->startOfYear()->toDateString(),
+                                now()->endOfYear()->toDateString(),
+                            ]),
+                            default => $query,
+                        };
+                    }),
+                Filter::make('entry_date_range')
+                    ->label(__('Date range'))
+                    ->form([
+                        Forms\Components\DatePicker::make('from')
+                            ->label(__('From')),
+                        Forms\Components\DatePicker::make('until')
+                            ->label(__('Until')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'] ?? null,
+                                fn (Builder $q, string $date): Builder => $q->whereDate('entry_date', '>=', $date)
+                            )
+                            ->when(
+                                $data['until'] ?? null,
+                                fn (Builder $q, string $date): Builder => $q->whereDate('entry_date', '<=', $date)
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        if (filled($data['from'] ?? null)) {
+                            $indicators[] = Indicator::make(__('From').' '.$data['from']);
+                        }
+                        if (filled($data['until'] ?? null)) {
+                            $indicators[] = Indicator::make(__('Until').' '.$data['until']);
+                        }
+
+                        return $indicators;
+                    }),
             ])
+            ->groups([
+                Group::make('entry_date')
+                    ->label(__('Day'))
+                    ->date()
+                    ->collapsible(),
+            ])
+            ->groupingSettingsInDropdownOnDesktop()
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -147,6 +242,13 @@ class CashflowEntryResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            CashflowTotalsOverview::class,
+        ];
     }
 
     public static function getRelations(): array

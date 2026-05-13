@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 
 class InvoiceResource extends Resource
@@ -157,6 +158,31 @@ class InvoiceResource extends Resource
                 //
             ])
             ->actions([
+                ActionGroup::make(__('Download / print'))
+                    ->icon('heroicon-m-arrow-down-tray')
+                    ->button()
+                    ->actions([
+                        Tables\Actions\Action::make('print')
+                            ->label(__('Print'))
+                            ->icon('heroicon-o-printer')
+                            ->url(fn (Invoice $record): string => route('documents.invoice.print', $record))
+                            ->openUrlInNewTab(),
+                        Tables\Actions\Action::make('pdf')
+                            ->label(__('PDF'))
+                            ->icon('heroicon-o-document-arrow-down')
+                            ->url(fn (Invoice $record): string => route('documents.invoice.pdf', $record))
+                            ->openUrlInNewTab(),
+                        Tables\Actions\Action::make('csv')
+                            ->label(__('CSV'))
+                            ->icon('heroicon-o-table-cells')
+                            ->url(fn (Invoice $record): string => route('documents.invoice.csv', $record))
+                            ->openUrlInNewTab(),
+                        Tables\Actions\Action::make('xlsx')
+                            ->label(__('Excel'))
+                            ->icon('heroicon-o-document-chart-bar')
+                            ->url(fn (Invoice $record): string => route('documents.invoice.xlsx', $record))
+                            ->openUrlInNewTab(),
+                    ]),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
