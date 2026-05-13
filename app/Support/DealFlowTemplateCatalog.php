@@ -17,6 +17,7 @@ class DealFlowTemplateCatalog
             self::companyRegistration(),
             self::domainHosting(),
             self::taxCompliance(),
+            self::digitalMarketingPaidSocial(),
         ];
     }
 
@@ -240,6 +241,92 @@ class DealFlowTemplateCatalog
             ],
             'automation_rules' => [
                 'on_deal_won' => ['generate' => 'compliance_calendar'],
+            ],
+        ];
+    }
+
+    /**
+     * Paid social / performance marketing — Meta (Facebook & Instagram), TikTok, etc.
+     * Includes campaign end date & time, platform fee notes, and agency pricing scaffolding.
+     *
+     * @return array<string, mixed>
+     */
+    protected static function digitalMarketingPaidSocial(): array
+    {
+        return [
+            'template_code' => 'SRV-ADS-001',
+            'name' => 'Digital Marketing — Paid Social (Meta, Instagram, TikTok)',
+            'category' => 'digital_marketing',
+            'description' => 'Agency template for clients running paid ads on Facebook, Instagram, TikTok, and similar platforms. Capture campaign end date and time for renewals and reporting; separate your management fee from platform ad spend and pass-through charges.',
+            'cost_price' => '120.00',
+            'sell_price' => '280.00',
+            'timeline_days' => 30,
+            'version_label' => '1.0',
+            'pricing_structure' => [
+                'currency' => 'USD',
+                'notes' => 'Ad spend is billed by the platform (or invoiced to you for pass-through). Replace example sell/cost figures with your live rate card. Always record campaign expiry date AND time (timezone-aware) per client.',
+                'campaign_expiry' => [
+                    'track_end_datetime' => true,
+                    'timezone' => 'Africa/Harare',
+                    'fields' => [
+                        ['key' => 'campaign_name', 'label' => 'Campaign / flight name', 'required' => true],
+                        ['key' => 'end_date', 'label' => 'Campaign end date', 'required' => true],
+                        ['key' => 'end_time', 'label' => 'Campaign end time (local)', 'required' => true],
+                        ['key' => 'timezone', 'label' => 'Timezone for end time', 'required' => true],
+                        ['key' => 'renewal_intent', 'label' => 'Renew / pause / end at expiry', 'required' => false],
+                    ],
+                    'reminder_offsets_hours_before_end' => [72, 24, 2],
+                ],
+                'agency_core_fees' => [
+                    ['id' => 'setup', 'name' => 'Account setup, pixel/conversion API, audiences', 'sell_price' => 280, 'cost_price' => 120, 'billing' => 'one_time'],
+                    ['id' => 'mgmt_meta', 'name' => 'Monthly management — Meta (Facebook + Instagram)', 'sell_price' => 450, 'cost_price' => 160, 'billing' => 'per_month'],
+                    ['id' => 'mgmt_tiktok', 'name' => 'Monthly management — TikTok Ads', 'sell_price' => 420, 'cost_price' => 155, 'billing' => 'per_month'],
+                    ['id' => 'mgmt_bundle', 'name' => 'Monthly management — Meta + TikTok bundle', 'sell_price' => 750, 'cost_price' => 260, 'billing' => 'per_month'],
+                ],
+                'meta_facebook_instagram' => [
+                    'platform' => 'Meta (Facebook & Instagram)',
+                    'ads_manager' => 'Meta Ads Manager',
+                    'platform_charges' => 'Meta charges ad spend to the ad account (card or invoicing where available). Optional taxes/fees may appear on Meta invoices. Typical agency models: (1) client pays Meta directly + you bill management only, or (2) you invoice ad spend + agreed markup (e.g. 10–15%) — document which model applies on the quote.',
+                    'example_line_items' => [
+                        ['label' => 'Creative pack — static + carousel (per campaign)', 'sell_price' => 180, 'cost_price' => 65],
+                        ['label' => 'Monthly reporting & optimisation calls', 'sell_price' => 95, 'cost_price' => 35],
+                        ['label' => 'Lead form / instant form build & QA', 'sell_price' => 120, 'cost_price' => 45],
+                    ],
+                ],
+                'tiktok' => [
+                    'platform' => 'TikTok Ads',
+                    'platform_charges' => 'TikTok bills ad spend to the TikTok ad account. Your line items below are agency fees; keep ad spend separate on quotes for transparency.',
+                    'example_line_items' => [
+                        ['label' => 'Spark Ads / UGC briefing & shot list', 'sell_price' => 150, 'cost_price' => 55],
+                        ['label' => 'In-feed video campaign build (3–5 ads)', 'sell_price' => 220, 'cost_price' => 85],
+                    ],
+                ],
+                'addons' => [
+                    ['name' => 'Landing page or LP refresh (conversion-focused)', 'sell_price' => 320, 'cost_price' => 120, 'billing' => 'one_time'],
+                    ['name' => 'Competitor ad snapshot report', 'sell_price' => 90, 'cost_price' => 30, 'billing' => 'one_time'],
+                    ['name' => 'WhatsApp / click-to-message ad setup (Meta)', 'sell_price' => 85, 'cost_price' => 30, 'billing' => 'one_time'],
+                    ['name' => 'Rush launch (under 5 business days)', 'sell_price' => 200, 'cost_price' => 80, 'billing' => 'one_time'],
+                ],
+            ],
+            'demo_links' => [],
+            'required_documents' => [
+                ['label' => 'Business Manager / ad account access (admin or advertiser)', 'mandatory' => true],
+                ['label' => 'Brand guidelines & logo pack', 'mandatory' => true],
+                ['label' => 'Approved offer, landing URL, and compliance disclaimers', 'mandatory' => true],
+                ['label' => 'Target locations, languages, and exclusions', 'mandatory' => true],
+                ['label' => 'Monthly ad spend budget cap (per platform)', 'mandatory' => true],
+            ],
+            'deliverables' => [
+                'Media plan aligned to objectives (awareness / traffic / leads / sales)',
+                'Campaign build with naming convention and UTM structure',
+                'Campaign end date & time recorded per flight (with timezone)',
+                'Weekly optimisation checklist during live period',
+                'End-of-campaign report (spend, CPA/ROAS, learnings, renewal recommendation)',
+                'Optional: calendar reminders before campaign expiry (e.g. 72h / 24h / 2h)',
+            ],
+            'automation_rules' => [
+                'on_deal_won' => ['create_tasks' => ['Confirm ad account access', 'Lock campaign end date/time in CRM', 'Schedule pre-expiry reminders']],
+                'on_renewal' => ['suggested_hook' => 'campaign_expiry_datetime'],
             ],
         ];
     }
