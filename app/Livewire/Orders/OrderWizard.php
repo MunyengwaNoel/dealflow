@@ -82,6 +82,20 @@ class OrderWizard extends Component
 
     public string $taxFrequency = 'once';
 
+    /** Paid social / digital ads (Meta, Instagram, TikTok) */
+    public string $adsPlatformBundle = 'meta';
+
+    public string $adsCampaignName = '';
+
+    public ?string $adsCampaignEndDate = null;
+
+    public string $adsCampaignEndTime = '23:59';
+
+    public string $adsTimezone = 'Africa/Harare';
+
+    /** @var list<string> */
+    public array $adsAddons = [];
+
     public string $paymentTerms = 'deposit';
 
     public bool $sendEmail = true;
@@ -165,7 +179,7 @@ class OrderWizard extends Component
     protected function rebuildSteps(): void
     {
         $seq = ['customer', 'services'];
-        $order = ['domain', 'website', 'email', 'company_reg', 'tax_clearance', 'business_plan'];
+        $order = ['domain', 'website', 'email', 'company_reg', 'tax_clearance', 'business_plan', 'paid_social'];
         foreach ($order as $k) {
             if (in_array($k, $this->selectedServices, true)) {
                 $seq[] = $k;
@@ -312,6 +326,14 @@ class OrderWizard extends Component
                 'urgent' => $this->taxUrgent === 1,
                 'frequency' => $this->taxFrequency,
             ],
+            'paid_social' => [
+                'platform_bundle' => $this->adsPlatformBundle,
+                'campaign_name' => $this->adsCampaignName,
+                'campaign_end_date' => $this->adsCampaignEndDate,
+                'campaign_end_time' => $this->adsCampaignEndTime,
+                'timezone' => $this->adsTimezone,
+                'addons' => $this->adsAddons,
+            ],
             'demo_links' => [],
         ];
     }
@@ -344,6 +366,13 @@ class OrderWizard extends Component
         $t = $s['tax_clearance'] ?? [];
         $this->taxUrgent = (int) ($t['urgent'] ?? 0);
         $this->taxFrequency = (string) ($t['frequency'] ?? 'once');
+        $ps = $s['paid_social'] ?? [];
+        $this->adsPlatformBundle = (string) ($ps['platform_bundle'] ?? 'meta');
+        $this->adsCampaignName = (string) ($ps['campaign_name'] ?? '');
+        $this->adsCampaignEndDate = isset($ps['campaign_end_date']) ? (string) $ps['campaign_end_date'] : null;
+        $this->adsCampaignEndTime = (string) ($ps['campaign_end_time'] ?? '23:59');
+        $this->adsTimezone = (string) ($ps['timezone'] ?? 'Africa/Harare');
+        $this->adsAddons = $ps['addons'] ?? [];
     }
 
     protected function validateCurrent(): bool
@@ -418,6 +447,17 @@ class OrderWizard extends Component
         }
         if ($key === 'tax_clearance') {
             $this->validate(['taxFrequency' => 'required|string']);
+
+            return true;
+        }
+        if ($key === 'paid_social') {
+            $this->validate([
+                'adsCampaignName' => 'required|string|min:3|max:120',
+                'adsCampaignEndDate' => 'required|date',
+                'adsCampaignEndTime' => ['required', 'regex:/^\d{1,2}:\d{2}$/'],
+                'adsTimezone' => 'required|string|max:64',
+                'adsPlatformBundle' => 'required|in:meta,tiktok,bundle',
+            ]);
 
             return true;
         }
@@ -505,6 +545,15 @@ class OrderWizard extends Component
             $this->companyAddons = array_values(array_filter($this->companyAddons, fn ($k) => $k !== $key));
         } else {
             $this->companyAddons[] = $key;
+        }
+    }
+
+    public function togglePaidSocialAddon(string $key): void
+    {
+        if (in_array($key, $this->adsAddons, true)) {
+            $this->adsAddons = array_values(array_filter($this->adsAddons, fn ($k) => $k !== $key));
+        } else {
+            $this->adsAddons[] = $key;
         }
     }
 

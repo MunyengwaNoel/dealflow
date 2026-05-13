@@ -29,6 +29,7 @@
                 <a href="#process" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Registration</a>
                 <a href="#renewals" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Renewals</a>
                 <a href="#alerts" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Alerts</a>
+                <a href="#ads-desk" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Ads desk</a>
                 <a href="#features" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Platform</a>
                 <a href="#pricing" :class="scrolled ? 'text-slate-300 hover:text-white' : 'text-slate-200 hover:text-white'" class="px-3.5 py-1.5 text-sm font-medium rounded-full transition-colors">Pricing</a>
             </nav>
@@ -59,6 +60,7 @@
                 <a href="#process" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Registration</a>
                 <a href="#renewals" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Renewals</a>
                 <a href="#alerts" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Alerts</a>
+                <a href="#ads-desk" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Ads desk</a>
                 <a href="#features" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Platform</a>
                 <a href="#pricing" @click="mobileOpen=false" class="px-3 py-2.5 text-sm font-medium text-slate-200 rounded-lg hover:bg-white/5">Pricing</a>
                 <div class="flex gap-2 mt-3 pt-3 border-t border-white/10">
@@ -388,6 +390,79 @@
     </div>
 </section>
 
+{{-- ADS DESK: paid social flight control --}}
+<section id="ads-desk" class="scroll-mt-24 relative overflow-hidden py-20 md:py-28 bg-[#0b0614] text-white border-y border-white/5">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_80%_0%,rgba(217,70,239,0.22),transparent)]"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_10%_90%,rgba(34,211,238,0.12),transparent)]"></div>
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10 mb-12 md:mb-16">
+            <div class="max-w-xl">
+                <p class="inline-flex items-center gap-2 rounded-full border border-fuchsia-400/30 bg-fuchsia-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-fuchsia-200 mb-4">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-fuchsia-400 opacity-60"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-fuchsia-400"></span>
+                    </span>
+                    For agencies &amp; growth teams
+                </p>
+                <h2 class="text-3xl sm:text-4xl md:text-[2.75rem] font-extrabold tracking-tight leading-tight">
+                    The <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-pink-400">Ads desk</span> — where campaigns land with a clock attached
+                </h2>
+                <p class="mt-4 text-slate-400 text-base sm:text-lg leading-relaxed">
+                    Facebook, Instagram, TikTok: same discipline you use for domains and tax certs. Capture <strong class="text-white">end date and time</strong>, split <strong class="text-white">platform spend</strong> from <strong class="text-white">your fees</strong>, and let renewals surface beside every other obligation.
+                </p>
+            </div>
+            <div class="lg:text-right">
+                <a href="/register" class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-fuchsia-500 to-pink-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 hover:brightness-110 transition-all">
+                    Start free — wire your rate card
+                </a>
+                <p class="mt-3 text-xs text-slate-500">Guided order wizard includes a paid-social path with live totals.</p>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-5 md:gap-6">
+            <div class="lg:col-span-5 rounded-2xl border border-white/10 bg-white/[0.04] p-6 md:p-8 backdrop-blur-md">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-cyan-200/90">Countdown-first</h3>
+                <p class="mt-3 text-2xl font-black tabular-nums tracking-tight text-white">72 : 24 : 02</p>
+                <p class="mt-1 text-xs text-slate-400">Hours before flight end — mirrored in reminders, quotes, and handoff notes.</p>
+                <ul class="mt-6 space-y-3 text-sm text-slate-300">
+                    <li class="flex gap-2"><span class="text-fuchsia-400 font-bold">→</span> Campaign name + objective baked into the order</li>
+                    <li class="flex gap-2"><span class="text-fuchsia-400 font-bold">→</span> Timezone-safe expiry for global clients</li>
+                    <li class="flex gap-2"><span class="text-fuchsia-400 font-bold">→</span> Meta vs TikTok bundles with transparent management pricing</li>
+                </ul>
+            </div>
+            <div class="lg:col-span-7 grid sm:grid-cols-3 gap-4">
+                @foreach([
+                    ['📘','Meta','Facebook + Instagram','Ad account spend billed separately. Your line: strategy, creative, optimisation.'],
+                    ['🎵','TikTok','Spark & in-feed','Short-form velocity with the same renewal DNA as your other services.'],
+                    ['✦','DealFlow','One ledger','Quotes, invoices, and alerts — so “campaign ends Friday 17:00” is never a Slack thread lost at sea.'],
+                ] as $tile)
+                <div class="rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent p-5 flex flex-col">
+                    <span class="text-2xl mb-2" aria-hidden="true">{{ $tile[0] }}</span>
+                    <h4 class="font-bold text-white">{{ $tile[1] }}</h4>
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-fuchsia-300/90 mt-1">{{ $tile[2] }}</p>
+                    <p class="mt-3 text-xs text-slate-400 leading-relaxed flex-1">{{ $tile[3] }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="mt-8 grid md:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm">
+                <p class="text-[10px] font-bold uppercase text-slate-500">Facebook pricing</p>
+                <p class="mt-1 text-slate-200">Setup + retainer model — optional ad-spend markup (e.g. 10–15%) disclosed on every quote.</p>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm">
+                <p class="text-[10px] font-bold uppercase text-slate-500">TikTok charges</p>
+                <p class="mt-1 text-slate-200">Platform invoices spend; you invoice craft &amp; cockpit hours — apples-to-apples with finance.</p>
+            </div>
+            <div class="rounded-xl border border-cyan-400/25 bg-cyan-500/10 px-4 py-3 text-sm">
+                <p class="text-[10px] font-bold uppercase text-cyan-200">Pro tip</p>
+                <p class="mt-1 text-cyan-50/95">Pair every flight with a document or subscription record — when creatives refresh, compliance already knows who approved the copy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 {{-- PLATFORM --}}
 <section id="features" class="scroll-mt-24 py-20 md:py-28 bg-slate-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -431,6 +506,12 @@
                     'desc' => 'Digest emails and in-app queues prioritise what is about to slip—domains, seats, licences, and payment milestones in one stream.',
                 ],
                 [
+                    'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c2.17 0 3.467 1.522 3.467 3.667 0 1.97-1.405 3.633-3.466 3.633h-.738"/>',
+                    'color' => 'rose',
+                    'title' => 'Paid social desk',
+                    'desc' => 'Guided orders for Meta, Instagram, and TikTok: lock <strong class="text-slate-800">campaign end date &amp; time</strong>, split platform spend from your fees, and surface renewals next to domains and compliance.',
+                ],
+                [
                     'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>',
                     'color' => 'indigo',
                     'title' => 'Command dashboard',
@@ -444,6 +525,7 @@
                 'emerald' => ['bg' => 'bg-emerald-50', 'icon' => 'text-emerald-600', 'ring' => 'ring-emerald-100'],
                 'amber' => ['bg' => 'bg-amber-50', 'icon' => 'text-amber-600', 'ring' => 'ring-amber-100'],
                 'indigo' => ['bg' => 'bg-indigo-50', 'icon' => 'text-indigo-600', 'ring' => 'ring-indigo-100'],
+                'rose' => ['bg' => 'bg-rose-50', 'icon' => 'text-rose-600', 'ring' => 'ring-rose-100'],
             ];
             @endphp
 
@@ -572,6 +654,7 @@
                         <li><a href="#process" class="hover:text-white transition-colors">Registration</a></li>
                         <li><a href="#renewals" class="hover:text-white transition-colors">Renewals</a></li>
                         <li><a href="#alerts" class="hover:text-white transition-colors">Alerts</a></li>
+                        <li><a href="#ads-desk" class="hover:text-white transition-colors">Ads desk</a></li>
                         <li><a href="#features" class="hover:text-white transition-colors">Platform</a></li>
                     </ul>
                 </div>

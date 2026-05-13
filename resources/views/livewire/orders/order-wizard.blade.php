@@ -73,6 +73,7 @@
                             'domain' => ['🌍','Domain registration',9],
                             'tax_clearance' => ['💰','Tax clearance',50],
                             'business_plan' => ['📑','Business plan',200],
+                            'paid_social' => ['📣','Paid social ads',280],
                         ] as $svc => $meta)
                             <button type="button" wire:click="toggleService('{{ $svc }}')"
                                     class="flex flex-col rounded-xl border p-4 text-left transition
@@ -258,6 +259,99 @@
                 <div class="space-y-2">
                     <h2 class="text-lg font-bold">📑 Business plan</h2>
                     <p class="text-sm text-gray-600">Includes market overview, financial projections template, and investor-ready summary.</p>
+                </div>
+            @endif
+
+            @if($k === 'paid_social')
+                <div class="space-y-6">
+                    <div class="relative overflow-hidden rounded-2xl border border-fuchsia-500/30 bg-gradient-to-br from-slate-900 via-violet-950/80 to-slate-900 p-5 text-white shadow-lg ring-1 ring-white/10">
+                        <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-fuchsia-500/25 blur-2xl"></div>
+                        <div class="pointer-events-none absolute -bottom-10 -left-10 h-36 w-36 rounded-full bg-cyan-500/20 blur-2xl"></div>
+                        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-fuchsia-200/90">Flight deck</p>
+                        <h2 class="mt-1 text-xl font-extrabold tracking-tight">Paid social — price the craft, <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-fuchsia-300">bill the platforms separately</span></h2>
+                        <p class="mt-2 text-sm text-slate-300/90 leading-relaxed max-w-xl">
+                            Meta, Instagram, and TikTok ad spend hits the client’s card or your pass-through account. Here you scope <strong>your</strong> setup, creative, and management—then pin the <strong>campaign end date &amp; time</strong> so renewals never ghost.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Campaign name</label>
+                        <input wire:model="adsCampaignName" class="fi-input w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900" placeholder="e.g. Q2 lead gen — Summer promo"/>
+                    </div>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">End date</label>
+                            <input type="date" wire:model="adsCampaignEndDate" class="fi-input w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900"/>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">End time (local)</label>
+                            <input type="time" wire:model="adsCampaignEndTime" class="fi-input w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900"/>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Timezone</label>
+                        <select wire:model="adsTimezone" class="fi-input w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900">
+                            <option value="Africa/Harare">Africa / Harare</option>
+                            <option value="Africa/Johannesburg">Africa / Johannesburg</option>
+                            <option value="UTC">UTC</option>
+                            <option value="Europe/London">Europe / London</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Management bundle</p>
+                        <div class="grid gap-3 sm:grid-cols-3">
+                            @foreach([
+                                'meta' => ['Meta + IG','Facebook & Instagram in Meta Ads Manager','from $450/mo'],
+                                'tiktok' => ['TikTok','In-feed & Spark-style builds','from $420/mo'],
+                                'bundle' => ['Full orbit','Meta + IG + TikTok','from $750/mo'],
+                            ] as $bid => $row)
+                                <button type="button" wire:click="$set('adsPlatformBundle','{{ $bid }}')"
+                                        class="rounded-xl border p-4 text-left transition {{ $adsPlatformBundle === $bid ? 'border-fuchsia-500 ring-2 ring-fuchsia-500/30 bg-fuchsia-50/50 dark:bg-fuchsia-950/30' : 'border-gray-200 dark:border-gray-700 hover:border-fuchsia-400/60' }}">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-fuchsia-600 dark:text-fuchsia-300">{{ $row[0] }}</span>
+                                    <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">{{ $row[1] }}</p>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">{{ $row[2] }}</p>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl border border-dashed border-violet-300/60 bg-violet-50/50 dark:bg-violet-950/20 dark:border-violet-500/30 p-4">
+                        <p class="text-xs font-bold text-violet-800 dark:text-violet-200">Platform charges (reference)</p>
+                        <ul class="mt-2 space-y-1.5 text-xs text-violet-900/90 dark:text-violet-100/80 leading-relaxed">
+                            <li><strong>Meta:</strong> ad spend billed to the ad account; optional agency markup (e.g. 10–15%) — spell it out on the quote.</li>
+                            <li><strong>TikTok:</strong> spend bills to TikTok Ads; your lines here are management + creative.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Boosters</p>
+                        <div class="grid gap-2 sm:grid-cols-2 text-sm">
+                            @foreach([
+                                'landing_page' => 'Landing page / LP refresh (+$320)',
+                                'competitor_report' => 'Competitor ad snapshot (+$90)',
+                                'whatsapp_ads' => 'WhatsApp click-to-message setup (+$85)',
+                                'rush_launch' => 'Rush launch — under 5 business days (+$200)',
+                            ] as $aid => $alab)
+                                <label class="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    <input type="checkbox" wire:click="togglePaidSocialAddon('{{ $aid }}')" @checked(in_array($aid, $adsAddons, true))/>
+                                    <span>{{ $alab }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    @if($adsCampaignEndDate && $adsCampaignName)
+                        <div class="flex items-center gap-3 rounded-xl border border-cyan-500/30 bg-cyan-50/80 dark:bg-cyan-950/30 dark:border-cyan-400/25 px-4 py-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-cyan-600 text-white text-lg font-black shrink-0" aria-hidden="true">⏱</div>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wide text-cyan-800 dark:text-cyan-200">Countdown anchor</p>
+                                <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $adsCampaignName }}</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Ends {{ $adsCampaignEndDate }} at {{ $adsCampaignEndTime }} ({{ $adsTimezone }}) — reminders at 72h, 24h, 2h.</p>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endif
 

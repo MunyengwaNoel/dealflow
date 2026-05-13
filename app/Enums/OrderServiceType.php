@@ -10,4 +10,6 @@ enum OrderServiceType: string
     case CompanyReg = 'company_reg';
     case TaxClearance = 'tax_clearance';
     case BusinessPlan = 'business_plan';
+
+    case PaidSocial = 'paid_social';
 }

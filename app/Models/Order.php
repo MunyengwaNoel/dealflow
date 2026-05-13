@@ -97,6 +97,7 @@ class Order extends Model
             'domain' => 'Domain',
             'tax_clearance' => 'Tax clearance',
             'business_plan' => 'Business plan',
+            'paid_social' => 'Paid social ads',
         ];
 
         return collect($keys)->map(fn (string $k) => $labels[$k] ?? $k)->implode(' + ');

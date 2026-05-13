@@ -249,6 +249,69 @@ class PriceCalculator
             ];
         }
 
+        if (in_array('paid_social', $services, true)) {
+            $p = $wizardState['paid_social'] ?? [];
+            $bundle = (string) ($p['platform_bundle'] ?? 'meta');
+            [$monthlySell, $monthlyCost] = match ($bundle) {
+                'tiktok' => [420.0, 155.0],
+                'bundle' => [750.0, 260.0],
+                default => [450.0, 160.0],
+            };
+            $setupSell = 280.0;
+            $setupCost = 120.0;
+            $addonSell = 0.0;
+            $addonCost = 0.0;
+            foreach ((array) ($p['addons'] ?? []) as $a) {
+                switch ($a) {
+                    case 'landing_page':
+                        $addonSell += 320.0;
+                        $addonCost += 120.0;
+                        break;
+                    case 'competitor_report':
+                        $addonSell += 90.0;
+                        $addonCost += 30.0;
+                        break;
+                    case 'whatsapp_ads':
+                        $addonSell += 85.0;
+                        $addonCost += 30.0;
+                        break;
+                    case 'rush_launch':
+                        $addonSell += 200.0;
+                        $addonCost += 80.0;
+                        break;
+                }
+            }
+            $bundleLabel = match ($bundle) {
+                'tiktok' => 'TikTok Ads',
+                'bundle' => 'Meta + Instagram + TikTok',
+                default => 'Meta (Facebook + Instagram)',
+            };
+            $camp = trim((string) ($p['campaign_name'] ?? ''));
+            $end = (string) ($p['campaign_end_date'] ?? '');
+            $tm = (string) ($p['campaign_end_time'] ?? '');
+            $tz = (string) ($p['timezone'] ?? '');
+            $suffix = $camp !== '' && $end !== '' ? ' — '.$camp.' · ends '.$end.' '.$tm.' ('.$tz.')' : '';
+
+            $lines[] = [
+                'service_type' => OrderServiceType::PaidSocial->value,
+                'name' => 'Paid social: setup & launch'.$suffix,
+                'unit_price' => round($setupSell + $addonSell, 2),
+                'unit_cost' => round($setupCost + $addonCost, 2),
+                'quantity' => 1,
+                'status' => 'pending',
+                'recurring' => false,
+            ];
+            $lines[] = [
+                'service_type' => OrderServiceType::PaidSocial->value,
+                'name' => 'Paid social: monthly management ('.$bundleLabel.')',
+                'unit_price' => round($monthlySell, 2),
+                'unit_cost' => round($monthlyCost, 2),
+                'quantity' => 1,
+                'status' => 'pending',
+                'recurring' => true,
+            ];
+        }
+
         return $lines;
     }
 }
