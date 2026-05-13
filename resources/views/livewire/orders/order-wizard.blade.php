@@ -28,27 +28,28 @@
 
             @if($k === 'customer')
                 <div class="space-y-4">
-                    <p class="text-sm text-gray-500">💡 Start typing company name or contact</p>
-                    <div class="flex gap-2">
-                        <input type="search" wire:model.live.debounce.300ms="clientSearch"
-                               class="fi-input block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600 dark:border-gray-700 dark:bg-gray-900"
-                               placeholder="Search customer…" autocomplete="off"/>
-                    </div>
-                    @if(count($clientResults))
-                        <ul class="divide-y divide-gray-100 rounded-lg border border-gray-200 dark:divide-gray-800 dark:border-gray-700">
-                            @foreach($clientResults as $c)
-                                <li>
-                                    <button type="button" wire:click="selectClient({{ $c['id'] }})"
-                                            class="flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-800">
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ $c['name'] }}</span>
-                                        <span class="text-xs text-gray-500">{{ $c['orders_count'] }} quotes</span>
-                                    </button>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Recent</p>
+                        <label for="client-search" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Customer</label>
+                        <p id="client-search-hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">Type at least 2 characters to search by name, trading name, email, or phone — or pick from the list.</p>
+                        <input id="client-search" type="search" wire:model.live.debounce.300ms="clientSearch" autocomplete="off" aria-describedby="client-search-hint"
+                               class="fi-input mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600 dark:border-gray-700 dark:bg-gray-900"
+                               placeholder="Search to filter the list…"/>
+                    </div>
+                    <div>
+                        <label for="client-picker" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Choose customer</label>
+                        <select id="client-picker" wire:model.live="clientId" aria-label="Choose customer"
+                                class="fi-input mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-600 focus:ring-primary-600 dark:border-gray-700 dark:bg-gray-900">
+                            <option value="">{{ __('— Select a customer —') }}</option>
+                            @foreach($pickerClients as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}@if($c->trading_name) · {{ $c->trading_name }}@endif ({{ $c->quotes_count }} quotes)</option>
+                            @endforeach
+                        </select>
+                        @if($pickerClients->isEmpty())
+                            <p class="mt-2 text-xs text-amber-700 dark:text-amber-300">{{ __('No customers match that search. Try another term or clear the search to see suggested clients.') }}</p>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ __('Quick picks') }}</p>
                         <div class="mt-2 flex flex-wrap gap-2">
                             @foreach($recentClients as $rc)
                                 <button type="button" wire:click="selectClient({{ $rc->id }})"

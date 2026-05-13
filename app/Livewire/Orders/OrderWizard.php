@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Services\DomainAvailabilityService;
 use App\Services\PriceCalculator;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -28,9 +29,6 @@ class OrderWizard extends Component
     public array $selectedServices = [];
 
     public string $clientSearch = '';
-
-    /** @var list<array{id:int,name:string,trading_name:?string,orders_count:int}> */
-    public array $clientResults = [];
 
     public string $domainPrefix = '';
 
@@ -128,36 +126,61 @@ class OrderWizard extends Component
         $this->hydrateFromState($s);
     }
 
-    public function updatedClientSearch(string $v): void
+    public function updatedClientId(mixed $value): void
     {
-        if (strlen($v) < 2) {
-            $this->clientResults = [];
+        if ($value === null || $value === '' || $value === '0') {
+            $this->clientId = null;
 
             return;
         }
-        $this->clientResults = Client::query()
-            ->where(function ($q) use ($v) {
-                $q->where('name', 'like', '%'.$v.'%')
-                    ->orWhere('trading_name', 'like', '%'.$v.'%')
-                    ->orWhere('email', 'like', '%'.$v.'%');
+        $id = (int) $value;
+        if ($id < 1) {
+            $this->clientId = null;
+
+            return;
+        }
+        $this->applyClientDefaults(Client::query()->findOrFail($id));
+    }
+
+    /**
+     * @return Collection<int, Client>
+     */
+    protected function pickerClients(): Collection
+    {
+        $query = Client::query()->withCount('quotes');
+
+        $term = trim($this->clientSearch);
+        if (strlen($term) >= 2) {
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', '%'.$term.'%')
+                    ->orWhere('trading_name', 'like', '%'.$term.'%')
+                    ->orWhere('email', 'like', '%'.$term.'%')
+                    ->orWhere('phone', 'like', '%'.$term.'%');
             })
-            ->withCount('quotes')
-            ->orderByDesc('quotes_count')
-            ->limit(12)
-            ->get()
-            ->map(fn (Client $c) => [
-                'id' => $c->id,
-                'name' => $c->name,
-                'trading_name' => $c->trading_name,
-                'orders_count' => (int) $c->quotes_count,
-            ])
-            ->all();
+                ->orderBy('name');
+        } else {
+            $query->orderByDesc('quotes_count')->orderBy('name');
+        }
+
+        $rows = $query->limit(50)->get();
+        if ($this->clientId && ! $rows->contains(fn (Client $c): bool => $c->id === $this->clientId)) {
+            $current = Client::query()->withCount('quotes')->find($this->clientId);
+            if ($current) {
+                $rows->prepend($current);
+            }
+        }
+
+        return $rows;
     }
 
     public function selectClient(int $id): void
     {
         $this->clientId = $id;
-        $client = Client::query()->findOrFail($id);
+        $this->applyClientDefaults(Client::query()->findOrFail($id));
+    }
+
+    protected function applyClientDefaults(Client $client): void
+    {
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '', $client->trading_name ?: $client->name) ?? '');
         if ($slug !== '' && $this->domainPrefix === '') {
             $this->domainPrefix = substr($slug, 0, 20);
@@ -590,6 +613,7 @@ class OrderWizard extends Component
             'pricing' => $summary,
             'clientName' => $this->clientId ? Client::query()->whereKey($this->clientId)->value('name') : '',
             'recentClients' => Client::query()->withCount('quotes')->orderByDesc('quotes_count')->limit(6)->get(),
+            'pickerClients' => $this->pickerClients(),
             'orderId' => $this->orderId,
         ]);
     }
