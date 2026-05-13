@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     public function tenant()
@@ -28,6 +29,14 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $this->tenant_id !== null;
+    }
+
+    /**
+     * Whether this user may manage the tenant's user directory (Filament Users, etc.).
+     */
+    public function hasAdminRole(): bool
+    {
+        return $this->role === 'admin';
     }
 
     /**

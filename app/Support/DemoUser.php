@@ -10,6 +10,9 @@ final class DemoUser
 {
     public const EMAIL = 'demo@dealflow.app';
 
+    /** Demo tenant user with role `admin` (for user-directory access in Filament). */
+    public const ADMIN_EMAIL = 'admin@demo.dealflow.app';
+
     /**
      * Ensure the demo owner exists so prepopulated admin login works after migrate without a manual seed.
      */

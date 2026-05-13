@@ -1,3 +1,6 @@
+@php
+    use App\Support\DemoUser;
+@endphp
 <div class="mt-6 rounded-xl border border-slate-500/40 bg-slate-900/90 p-4 ring-1 ring-white/10">
     <div class="mb-3 flex flex-wrap items-center gap-2">
         <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-200">
@@ -9,7 +12,7 @@
     <dl class="flex flex-col gap-2.5 text-sm">
         <div class="flex items-center justify-between gap-3">
             <dt class="text-xs font-medium text-slate-400">{{ __('Email') }}</dt>
-            <dd class="font-mono text-xs font-semibold text-sky-300">demo@dealflow.app</dd>
+            <dd class="font-mono text-xs font-semibold text-sky-300">{{ DemoUser::EMAIL }}</dd>
         </div>
         <div class="flex items-center justify-between gap-3">
             <dt class="text-xs font-medium text-slate-400">{{ __('Password') }}</dt>
@@ -18,5 +21,10 @@
     </dl>
     <p class="mt-3 text-xs leading-relaxed text-slate-400">
         {{ __('Pre-loaded with sample clients, deals, and invoices. Destructive actions are disabled.') }}
+    </p>
+    <p class="mt-3 border-t border-white/10 pt-3 text-xs leading-relaxed text-slate-400">
+        {{ __('To open Settings → Users (tenant admins only), sign in as') }}
+        <span class="font-mono font-semibold text-sky-300">{{ DemoUser::ADMIN_EMAIL }}</span>
+        {{ __('with the same password.') }}
     </p>
 </div>

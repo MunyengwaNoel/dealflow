@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
@@ -26,16 +26,69 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 50;
 
-    public static function shouldRegisterNavigation(): bool
+    /**
+     * Only tenant admins may browse or manage the registered user list.
+     */
+    protected static function authUserIsTenantAdmin(): bool
     {
         $user = auth()->user();
 
-        return $user instanceof User && in_array($user->role, ['owner', 'admin'], true);
+        return $user instanceof User && $user->hasAdminRole();
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::authUserIsTenantAdmin();
     }
 
     public static function canViewAny(): bool
     {
-        return static::shouldRegisterNavigation();
+        return static::authUserIsTenantAdmin();
+    }
+
+    public static function canCreate(): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canCreate();
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canEdit($record);
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canDelete($record);
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canDeleteAny();
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canForceDelete($record);
+    }
+
+    public static function canForceDeleteAny(): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canForceDeleteAny();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canRestore($record);
+    }
+
+    public static function canRestoreAny(): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canRestoreAny();
+    }
+
+    public static function canView(Model $record): bool
+    {
+        return static::authUserIsTenantAdmin() && parent::canView($record);
     }
 
     public static function form(Form $form): Form
@@ -133,9 +186,16 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+        $tenantId = auth()->user()?->tenant_id;
+        if ($tenantId !== null) {
+            $query->where($query->qualifyColumn('tenant_id'), $tenantId);
+        }
+
+        return $query;
     }
 }

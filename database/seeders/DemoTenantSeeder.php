@@ -76,6 +76,16 @@ class DemoTenantSeeder extends Seeder
 
             (new TenantService)->ensureDealFlowCatalog($tenant, $owner->id);
 
+            User::query()->updateOrCreate(
+                ['email' => DemoUser::ADMIN_EMAIL],
+                [
+                    'tenant_id' => $tenant->id,
+                    'name' => 'Demo Admin',
+                    'password' => 'password',
+                    'role' => 'admin',
+                ]
+            );
+
             if (Client::query()->where('tenant_id', $tenant->id)->exists()) {
                 $this->command?->info('Demo tenant already exists with data; skipped re-seeding fixtures. Login: '.DemoUser::EMAIL.' / password');
 
@@ -96,6 +106,16 @@ class DemoTenantSeeder extends Seeder
             $tenant = $created['tenant'];
             $owner = $created['owner'];
             (new TenantService)->ensureDealFlowCatalog($tenant, $owner->id);
+
+            User::query()->updateOrCreate(
+                ['email' => DemoUser::ADMIN_EMAIL],
+                [
+                    'tenant_id' => $tenant->id,
+                    'name' => 'Demo Admin',
+                    'password' => 'password',
+                    'role' => 'admin',
+                ]
+            );
         }
 
         app()->instance('tenant', $tenant);
