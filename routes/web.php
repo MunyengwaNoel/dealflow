@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InvoiceDocumentController;
+use App\Http\Controllers\OrderQuotePreviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicQuoteController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,15 @@ Route::middleware('auth')->group(function () {
         ->name('documents.invoice.csv');
     Route::get('/documents/invoices/{invoice}/export.xlsx', [InvoiceDocumentController::class, 'xlsx'])
         ->name('documents.invoice.xlsx');
+
+    Route::get('/documents/orders/{order}/quote-preview/print', [OrderQuotePreviewController::class, 'print'])
+        ->name('documents.order.quote-preview.print');
+    Route::get('/documents/orders/{order}/quote-preview.pdf', [OrderQuotePreviewController::class, 'pdf'])
+        ->name('documents.order.quote-preview.pdf');
+    Route::get('/documents/orders/{order}/quote-preview.csv', [OrderQuotePreviewController::class, 'csv'])
+        ->name('documents.order.quote-preview.csv');
+    Route::get('/documents/orders/{order}/quote-preview.xlsx', [OrderQuotePreviewController::class, 'xlsx'])
+        ->name('documents.order.quote-preview.xlsx');
 });
 
 require __DIR__.'/auth.php';

@@ -373,7 +373,37 @@
                         <label class="flex items-center gap-2"><input type="checkbox" wire:model="sendWhatsapp"/> WhatsApp link (logged)</label>
                         <label class="flex items-center gap-2"><input type="checkbox" wire:model="sendSms"/> SMS (optional)</label>
                     </div>
-                    <textarea wire:model="personalMessage" rows="3" class="fi-input w-full rounded-lg border-gray-300 dark:bg-gray-900" placeholder="Personal message to the client…"></textarea>
+                    <textarea wire:model.blur="personalMessage" rows="3" class="fi-input w-full rounded-lg border-gray-300 dark:bg-gray-900" placeholder="Personal message to the client…"></textarea>
+                    @if($orderId)
+                        <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-600 dark:bg-slate-900/40">
+                            <p class="text-xs font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400 mb-2">{{ __('Preview & export (saved draft)') }}</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-3">{{ __('PDF, CSV, and Excel use the last saved draft. Click “Save draft” after edits, then open a link.') }}</p>
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ route('documents.order.quote-preview.print', ['order' => $orderId]) }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                                    {{ __('Print') }}
+                                </a>
+                                <a href="{{ route('documents.order.quote-preview.print', ['order' => $orderId]) }}?autoprint=1" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                                    {{ __('Print (auto)') }}
+                                </a>
+                                <a href="{{ route('documents.order.quote-preview.pdf', ['order' => $orderId]) }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center rounded-lg bg-primary-600 px-3 py-2 text-xs font-semibold text-white hover:bg-primary-500">
+                                    {{ __('PDF') }}
+                                </a>
+                                <a href="{{ route('documents.order.quote-preview.csv', ['order' => $orderId]) }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                                    {{ __('CSV') }}
+                                </a>
+                                <a href="{{ route('documents.order.quote-preview.xlsx', ['order' => $orderId]) }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700">
+                                    {{ __('Excel') }}
+                                </a>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-xs text-amber-800 dark:text-amber-200/90">{{ __('Save a draft first to enable print, PDF, CSV, and Excel from your quote data.') }}</p>
+                    @endif
                 </div>
             @endif
 

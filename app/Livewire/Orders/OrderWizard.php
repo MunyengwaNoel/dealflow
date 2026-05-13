@@ -334,6 +334,10 @@ class OrderWizard extends Component
                 'timezone' => $this->adsTimezone,
                 'addons' => $this->adsAddons,
             ],
+            'review' => [
+                'payment_terms' => $this->paymentTerms,
+                'personal_message' => $this->personalMessage,
+            ],
             'demo_links' => [],
         ];
     }
@@ -373,6 +377,13 @@ class OrderWizard extends Component
         $this->adsCampaignEndTime = (string) ($ps['campaign_end_time'] ?? '23:59');
         $this->adsTimezone = (string) ($ps['timezone'] ?? 'Africa/Harare');
         $this->adsAddons = $ps['addons'] ?? [];
+        $r = $s['review'] ?? [];
+        if (array_key_exists('payment_terms', $r)) {
+            $this->paymentTerms = (string) $r['payment_terms'];
+        }
+        if (array_key_exists('personal_message', $r)) {
+            $this->personalMessage = (string) $r['personal_message'];
+        }
     }
 
     protected function validateCurrent(): bool
@@ -470,6 +481,20 @@ class OrderWizard extends Component
         return true;
     }
 
+    public function updatedPaymentTerms(): void
+    {
+        if ($this->orderId) {
+            $this->persistDraft();
+        }
+    }
+
+    public function updatedPersonalMessage(): void
+    {
+        if ($this->orderId) {
+            $this->persistDraft();
+        }
+    }
+
     public function sendQuote(): void
     {
         if (! $this->validateCurrent()) {
@@ -565,6 +590,7 @@ class OrderWizard extends Component
             'pricing' => $summary,
             'clientName' => $this->clientId ? Client::query()->whereKey($this->clientId)->value('name') : '',
             'recentClients' => Client::query()->withCount('quotes')->orderByDesc('quotes_count')->limit(6)->get(),
+            'orderId' => $this->orderId,
         ]);
     }
 }
