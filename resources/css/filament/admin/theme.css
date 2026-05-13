@@ -492,14 +492,28 @@
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* ── Brand logo (wordmark sits on panel chrome — no white plate) ─ */
+/* ── Brand logo (wordmark sits on panel chrome — no white / primary pill) ─ */
 .fi-logo {
     filter: none;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.fi-sidebar-header > div > a,
+.fi-topbar a[href]:has(.fi-logo) {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
 }
 
 .fi-simple-header img.fi-logo,
 .fi-sidebar-header img.fi-logo,
-.fi-topbar img.fi-logo {
+.fi-topbar img.fi-logo,
+.fi-simple-header .fi-logo img.fi-panel-brand-mark,
+.fi-sidebar-header .fi-logo img.fi-panel-brand-mark,
+.fi-topbar .fi-logo img.fi-panel-brand-mark {
     width: auto !important;
     max-width: min(100%, 14rem) !important;
     background: transparent !important;

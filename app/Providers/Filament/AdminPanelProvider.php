@@ -20,6 +20,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -32,12 +33,17 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->brandName(config('app.name', 'DealFlow Pro'))
-            ->brandLogo(asset('images/dealflow-logo.svg'))
-            ->darkModeBrandLogo(asset('images/dealflow-logo-on-dark.svg'))
             ->brandLogoHeight('2.75rem')
+            ->brandLogo(function (): HtmlString {
+                $height = filament()->getBrandLogoHeight() ?? '2.75rem';
+
+                return new HtmlString(view('filament.components.panel-brand-mark', [
+                    'height' => $height,
+                ])->render());
+            })
             ->font('Plus Jakarta Sans', provider: GoogleFontProvider::class)
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->favicon(asset('images/dealflow-logo.svg'))
+            ->favicon(url('images/dealflow-logo.svg'))
 
             // Colour palette: rich but purposeful
             ->colors([
