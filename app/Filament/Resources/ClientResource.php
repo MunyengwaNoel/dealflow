@@ -6,7 +6,6 @@ use App\Filament\Concerns\DemoReadOnlyResource;
 use App\Filament\Resources\ClientResource\Pages;
 use App\Filament\Resources\ClientResource\RelationManagers;
 use App\Models\Client;
-use App\Filament\Resources\QuoteResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -69,11 +68,6 @@ class ClientResource extends Resource
                     ->required(),
                 Forms\Components\Textarea::make('notes')
                     ->columnSpanFull(),
-                Forms\Components\Select::make('assigned_to')
-                    ->relationship('assignedTo', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->nullable(),
             ]);
     }
 

@@ -43,6 +43,15 @@ class Client extends Model
         'lifetime_value' => 'decimal:2',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (Client $client): void {
+            if ($client->assigned_to === null && auth()->check()) {
+                $client->assigned_to = auth()->id();
+            }
+        });
+    }
+
     public function assignedTo()
     {
         return $this->belongsTo(User::class, 'assigned_to');
