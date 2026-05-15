@@ -10,13 +10,15 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\Summarizers\Summarizer;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 
 class CashflowEntryResource extends Resource
 {
@@ -114,12 +116,26 @@ class CashflowEntryResource extends Resource
                     ->label(__('Income'))
                     ->state(fn (CashflowEntry $record): float => $record->entry_type === 'income' ? (float) $record->amount : 0.0)
                     ->numeric(decimalPlaces: 2)
-                    ->summarize(Sum::make()->label(__('Income total'))),
+                    ->summarize(
+                        Summarizer::make('income_total')
+                            ->using(fn (QueryBuilder $query): float => (float) $query->sum(
+                                DB::raw("CASE WHEN `entry_type` = 'income' THEN `amount` ELSE 0 END")
+                            ))
+                            ->label(__('Income total'))
+                            ->numeric(decimalPlaces: 2),
+                    ),
                 Tables\Columns\TextColumn::make('expense_amount')
                     ->label(__('Expenses'))
                     ->state(fn (CashflowEntry $record): float => $record->entry_type === 'expense' ? (float) $record->amount : 0.0)
                     ->numeric(decimalPlaces: 2)
-                    ->summarize(Sum::make()->label(__('Expense total'))),
+                    ->summarize(
+                        Summarizer::make('expense_total')
+                            ->using(fn (QueryBuilder $query): float => (float) $query->sum(
+                                DB::raw("CASE WHEN `entry_type` = 'expense' THEN `amount` ELSE 0 END")
+                            ))
+                            ->label(__('Expense total'))
+                            ->numeric(decimalPlaces: 2),
+                    ),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'cash' => __('Cash'),
